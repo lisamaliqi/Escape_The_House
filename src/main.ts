@@ -1,35 +1,30 @@
 import { Application, Assets, Sprite } from 'pixi.js'
 
 ;(async () => {
-  // Create a new application
   const app = new Application()
 
-  // Initialize the application
-  await app.init({ background: '#1099bb', resizeTo: window })
+  await app.init({
+    width: 1200,
+    height: 800,
+  })
 
-  // Append the application canvas to the document body
   document.body.appendChild(app.canvas)
 
-  // Load the bunny texture
-  const texture = await Assets.load('https://pixijs.com/assets/bunny.png')
+  // --- ROOM 1 ---
+  //load up image of room 1
+  const room1Texture = await Assets.load('/room1.png')
+  const room1 = new Sprite(room1Texture)
 
-  // Create a bunny Sprite
-  const bunny = new Sprite(texture)
+  //Center the anchor point to the middle of the room
+  room1.anchor.set(0.5)
 
-  // Center the sprite's anchor point
-  bunny.anchor.set(0.5)
+  //place room in the center of the screen
+  room1.x = app.screen.width / 2
+  room1.y = app.screen.height / 2
 
-  // Move the sprite to the center of the screen
-  bunny.x = app.screen.width / 2
-  bunny.y = app.screen.height / 2
+  //make the room bigger
+  room1.scale.set(2)
 
-  app.stage.addChild(bunny)
-
-  // Listen for animate update
-  app.ticker.add((time) => {
-    // Just for fun, let's rotate mr rabbit a little.
-    // * Delta is 1 if running at 100% performance *
-    // * Creates frame-independent transformation *
-    bunny.rotation += 0.1 * time.deltaTime
-  })
+  //add the room to the canvas
+  app.stage.addChild(room1)
 })()
