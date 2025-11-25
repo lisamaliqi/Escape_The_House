@@ -1,4 +1,4 @@
-import { Application, Assets, Sprite } from 'pixi.js'
+import { Application, Assets, Graphics, Sprite } from 'pixi.js'
 
 ;(async () => {
   const app = new Application()
@@ -27,4 +27,21 @@ import { Application, Assets, Sprite } from 'pixi.js'
 
   //add the room to the canvas
   app.stage.addChild(room1)
+
+  //----------------------------------------------
+  // --- CHARACTER (currently a rectangle) ---
+  const playerHeight = 50
+  const playerWidth = 30
+
+  const player = new Graphics()
+  player
+    .rect(-playerWidth / 2, -playerHeight / 2, playerWidth, playerHeight) // center the rectangle
+    .fill(0xff4444) // red rectangle
+
+  // starting position of the player
+  player.x = app.screen.width / 2
+  player.y = app.screen.height / 2 + 60
+
+  //add player to the canvas
+  app.stage.addChild(player)
 })()
