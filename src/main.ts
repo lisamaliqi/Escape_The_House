@@ -30,8 +30,8 @@ import { Application, Assets, Graphics, Sprite } from 'pixi.js'
 
   //----------------------------------------------
   // --- CHARACTER (currently a rectangle) ---
-  const playerHeight = 50
-  const playerWidth = 30
+  const playerHeight = 80
+  const playerWidth = 50
 
   const player = new Graphics()
   player
@@ -44,4 +44,49 @@ import { Application, Assets, Graphics, Sprite } from 'pixi.js'
 
   //add player to the canvas
   app.stage.addChild(player)
+
+  // --- KEYS ---
+  const keys: Record<string, boolean> = {}
+
+  window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase()
+    if (
+      k === 'arrowup' ||
+      k === 'arrowdown' ||
+      k === 'arrowleft' ||
+      k === 'arrowright' ||
+      k === 'w' ||
+      k === 'a' ||
+      k === 's' ||
+      k === 'd'
+    ) {
+      e.preventDefault() // prevent scrolling with arrow keys
+    }
+    keys[k] = true
+  })
+
+  window.addEventListener('keyup', (e) => {
+    keys[e.key.toLowerCase()] = false
+  })
+
+  // --- GAME LOOP: Move the player ---
+  const speed = 4
+
+  app.ticker.add(() => {
+    // up/down
+    if (keys['arrowup'] || keys['w']) {
+      player.y -= speed
+    }
+    if (keys['arrowdown'] || keys['s']) {
+      player.y += speed
+    }
+
+    // left/right
+    if (keys['arrowleft'] || keys['a']) {
+      player.x -= speed
+    }
+    if (keys['arrowright'] || keys['d']) {
+      player.x += speed
+    }
+  })
 })()
