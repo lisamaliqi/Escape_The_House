@@ -8,7 +8,7 @@ import { Room1 } from './game/rooms/room1/Room1'
   const app = new Application()
   await app.init({
     width: 1200, //choose width and hight of canvas
-    height: 800,
+    height: 700,
   })
 
   //put canvas on the page
