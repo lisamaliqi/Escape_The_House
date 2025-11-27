@@ -45,6 +45,15 @@ export const Room1 = async (app: Application) => {
   const maskImage = await loadMask('/room1/room1_mask.png')
   const { maskCanvas, maskData } = setupMask(maskImage)
 
+  //load safe
+  const safeTexture = await Assets.load('/room1/objects/safe/safe.png')
+  const safe = new Sprite(safeTexture)
+
+  safe.anchor.set(0.5)
+  safe.x = 190
+  safe.y = 290
+  safe.scale.set(2)
+
   // helper: is position walkable?
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
@@ -67,6 +76,7 @@ export const Room1 = async (app: Application) => {
 
   return {
     sprite: room,
+    safe,
     isWalkable,
   }
 }

@@ -37,18 +37,29 @@ export class Character {
   update = (input: Input, room: Room) => {
     let { x, y } = this.sprite
 
-    // movement
+    // // movement
     if (input.up) y -= this.speed
     if (input.down) y += this.speed
     if (input.left) x -= this.speed
     if (input.right) x += this.speed
 
-    // check player feet (bottom center)
-    const footX = x
-    const footY = y + 50
+    const halfWidth = 35
+    const footOffset = 50
 
-    //if moving to position that is walkable, update position, else do nothing (standing still)
-    if (room.isWalkable(footX, footY)) {
+    //three points at the characters feet for stopping at walls and objects
+    const leftFootX = x - halfWidth
+    const midFootX = x
+    const rightFootX = x + halfWidth
+
+    const footY = y + footOffset
+
+    //all three points must be walkable to move
+    const canWalk =
+      room.isWalkable(leftFootX, footY) &&
+      room.isWalkable(midFootX, footY) &&
+      room.isWalkable(rightFootX, footY)
+
+    if (canWalk) {
       this.sprite.x = x
       this.sprite.y = y
     }

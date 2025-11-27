@@ -18,7 +18,12 @@ import { Room1 } from './game/rooms/room1/Room1'
   const room1 = await Room1(app) //create room1
   const character = new Character(app, input, room1) //create character
 
-  //add room and character to canvas so they are visible
+  //add room
   app.stage.addChild(room1.sprite)
+
+  //add objects
+  app.stage.addChild(room1.safe)
+
+  //add character last so its on top
   app.stage.addChild(character.sprite)
 })()
