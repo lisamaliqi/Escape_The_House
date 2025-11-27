@@ -1,4 +1,5 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
+import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
 
 // draw mask image to canvas and get pixel data
 const loadMask = (path: string): Promise<HTMLImageElement> =>
@@ -45,63 +46,9 @@ export const Room1 = async (app: Application) => {
   const maskImage = await loadMask('/room1/room1_mask.png')
   const { maskCanvas, maskData } = setupMask(maskImage)
 
-  //load spritesheet (animation) for safe object
-  const safeSheet = await Assets.load('/room1/objects/safe/safe.json')
-
-  const safeClosed = safeSheet.textures['{safe} 0.aseprite']
-  const safeHalf = safeSheet.textures['{safe} 1.aseprite']
-  const safeOpen = safeSheet.textures['{safe} 2.aseprite']
-
-  const safe = new Sprite(safeClosed)
-
-  safe.anchor.set(0.5)
-  safe.x = 190
-  safe.y = 290
-  safe.scale.set(2)
-
-  //state for safe animation
-  type SafeState = 'closed' | 'half' | 'open'
-
-  let safeState: SafeState = 'closed'
-  let isTransitioning = false
-
-  //function to change safe state (animation)
-  const setSafeState = (state: SafeState) => {
-    safeState = state
-    if (state === 'closed') safe.texture = safeClosed
-    if (state === 'half') safe.texture = safeHalf
-    if (state === 'open') safe.texture = safeOpen
-  }
-
-  // initial value == closed
-  setSafeState('closed')
-
-  //click event to toggle safe state
-  const toggleSafe = () => {
-    if (isTransitioning) return
-    isTransitioning = true
-
-    //closed -> half -> open
-    if (safeState === 'closed') {
-      setSafeState('half')
-      setTimeout(() => {
-        setSafeState('open')
-        isTransitioning = false
-      }, 150) // 150ms "half open"
-    }
-    //open -> half -> closed
-    else if (safeState === 'open') {
-      setSafeState('half')
-      setTimeout(() => {
-        setSafeState('closed')
-        isTransitioning = false
-      }, 150)
-    } else {
-      // fallback to closed state
-      setSafeState('closed')
-      isTransitioning = false
-    }
-  }
+  // create safe puzzle
+  const safePuzzle: SafePuzzle = await createSafePuzzle()
+  const safe = safePuzzle.sprite //safe sprite
 
   // helper: is position walkable?
   const isWalkable = (worldX: number, worldY: number) => {
@@ -127,6 +74,6 @@ export const Room1 = async (app: Application) => {
     sprite: room,
     safe,
     isWalkable,
-    toggleSafe,
+    toggleSafe: safePuzzle.toggle,
   }
 }

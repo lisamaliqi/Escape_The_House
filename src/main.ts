@@ -21,12 +21,6 @@ import { Room1 } from './game/rooms/room1/Room1'
   //add room
   app.stage.addChild(room1.sprite)
 
-  //DEBUG BUTTON to toggle safe state (not needed in final game)
-  const button = document.getElementById('debug-safe-toggle')
-  button?.addEventListener('click', () => {
-    room1.toggleSafe()
-  })
-
   //add objects
   app.stage.addChild(room1.safe)
 
