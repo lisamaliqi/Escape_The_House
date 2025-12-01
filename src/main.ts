@@ -24,6 +24,7 @@ import { Room1 } from './game/rooms/room1/Room1'
 
   //add objects behind character
   app.stage.addChild(room1.safe)
+  app.stage.addChild(room1.shovel)
 
   //add character
   app.stage.addChild(character.sprite)
@@ -59,5 +60,15 @@ import { Room1 } from './game/rooms/room1/Room1'
     radius: 70,
     onInteract: room1.dig,
     promptText: 'Press E to Dig',
+  })
+
+  interactionSystem.addInteractable({
+    id: 'shovel',
+    getPosition: () => ({
+      x: room1.shovel.x,
+      y: room1.shovel.y + 40,
+    }),
+    radius: 30,
+    promptText: 'Press E to collect',
   })
 })()

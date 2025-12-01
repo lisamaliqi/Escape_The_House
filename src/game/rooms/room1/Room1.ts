@@ -1,4 +1,5 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
+import { room1Objects } from './objects'
 import { createPlantPuzzle, type PlantPuzzle } from './plantPuzzle'
 import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
 
@@ -55,6 +56,10 @@ export const Room1 = async (app: Application) => {
   const plantPuzzle: PlantPuzzle = await createPlantPuzzle()
   const plant = plantPuzzle.sprite
 
+  //get objects for room 1
+  const shovelInventory = await room1Objects()
+  const shovel = shovelInventory.shovel
+
   // helper: is position walkable?
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
@@ -82,5 +87,6 @@ export const Room1 = async (app: Application) => {
     isWalkable,
     toggleSafe: safePuzzle.toggle,
     dig: plantPuzzle.dig,
+    shovel,
   }
 }

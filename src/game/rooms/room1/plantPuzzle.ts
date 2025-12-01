@@ -38,7 +38,13 @@ export const createPlantPuzzle = async (): Promise<PlantPuzzle> => {
   setPlantState('alive')
 
   const dig = () => {
-    console.log('currently digging!')
+    if (plantState === 'dead') {
+      // console.log('inside first if')
+      return //already dug, don' want to dig again
+    } else {
+      // console.log('inside second if')
+      setPlantState('dead')
+    }
   }
 
   return {

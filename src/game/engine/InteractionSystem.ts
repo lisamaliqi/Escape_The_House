@@ -13,7 +13,7 @@ interface Interactable {
   id: string //name of the interactable object
   getPosition: () => { x: number; y: number } // ex. safe-position
   radius: number // how close the character must be to interact
-  onInteract: () => void //what happens on interaction
+  onInteract?: () => void //what happens on interaction
   promptText: string //text to show when in range of interaction
 }
 
@@ -109,7 +109,7 @@ export class InteractionSystem {
     const keyInteract = this.input.interact
     const justPressed = keyInteract && !this.prevInteract
 
-    if (justPressed && this.current) {
+    if (justPressed && this.current && this.current.onInteract) {
       this.current.onInteract()
     }
 
