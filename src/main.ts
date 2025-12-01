@@ -22,11 +22,14 @@ import { Room1 } from './game/rooms/room1/Room1'
   //add room
   app.stage.addChild(room1.sprite)
 
-  //add objects
+  //add objects behind character
   app.stage.addChild(room1.safe)
 
-  //add character last so its on top
+  //add character
   app.stage.addChild(character.sprite)
+
+  //add objects in front of character
+  app.stage.addChild(room1.plant)
 
   // --- InteractionSystem ---
   const interactionSystem = new InteractionSystem(app, input, () => ({
@@ -45,5 +48,16 @@ import { Room1 } from './game/rooms/room1/Room1'
     radius: 100,
     onInteract: room1.toggleSafe,
     promptText: 'Press E to open',
+  })
+
+  interactionSystem.addInteractable({
+    id: 'blomkruka',
+    getPosition: () => ({
+      x: room1.plant.x,
+      y: room1.plant.y + 40,
+    }),
+    radius: 70,
+    onInteract: room1.dig,
+    promptText: 'Press E to Dig',
   })
 })()

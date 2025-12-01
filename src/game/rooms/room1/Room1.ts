@@ -1,4 +1,5 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
+import { createPlantPuzzle, type PlantPuzzle } from './plantPuzzle'
 import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
 
 // draw mask image to canvas and get pixel data
@@ -50,6 +51,10 @@ export const Room1 = async (app: Application) => {
   const safePuzzle: SafePuzzle = await createSafePuzzle()
   const safe = safePuzzle.sprite //safe sprite
 
+  //create plant puzzle
+  const plantPuzzle: PlantPuzzle = await createPlantPuzzle()
+  const plant = plantPuzzle.sprite
+
   // helper: is position walkable?
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
@@ -73,7 +78,9 @@ export const Room1 = async (app: Application) => {
   return {
     sprite: room,
     safe,
+    plant,
     isWalkable,
     toggleSafe: safePuzzle.toggle,
+    dig: plantPuzzle.dig,
   }
 }
