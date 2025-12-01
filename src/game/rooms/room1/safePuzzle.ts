@@ -87,11 +87,6 @@ export const createSafePuzzle = async (): Promise<SafePuzzle> => {
     }, 150)
   }
 
-  // make safe clickable (instead of toggle button)
-  safe.eventMode = 'static'
-  safe.cursor = 'pointer'
-  safe.on('pointerdown', toggleSafe)
-
   return {
     sprite: safe,
     toggle: toggleSafe,
