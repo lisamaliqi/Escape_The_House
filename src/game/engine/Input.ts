@@ -3,6 +3,7 @@ export class Input {
   down = false
   left = false
   right = false
+  interact = false
 
   // sets up event listeners to track key states
   constructor() {
@@ -30,5 +31,6 @@ export class Input {
     if (['s', 'arrowdown'].includes(k)) this.down = val
     if (['a', 'arrowleft'].includes(k)) this.left = val
     if (['d', 'arrowright'].includes(k)) this.right = val
+    if (k === 'e') this.interact = val
   }
 }

@@ -1,0 +1,118 @@
+import { Application, Container, Text } from 'pixi.js'
+import type { Input } from './Input'
+
+//interaction system to handle character interactions with objects
+/**
+ * Supposed to handle all interactive objects
+ * Check if character is close enough to interact
+ * Show prompt text when in range
+ * Handle interaction on key press (Input.interact)
+ */
+
+interface Interactable {
+  id: string //name of the interactable object
+  getPosition: () => { x: number; y: number } // ex. safe-position
+  radius: number // how close the character must be to interact
+  onInteract: () => void //what happens on interaction
+  promptText: string //text to show when in range of interaction
+}
+
+type GetCharacterFeetFn = () => { x: number; y: number }
+
+export class InteractionSystem {
+  //properties
+  private app: Application //pixi application
+  private input: Input //key press
+  private getCharacterFeet: GetCharacterFeetFn //get character position
+  private interactables: Interactable[] = [] //list of interactable objects
+  private current: Interactable | null = null //current active interactable object
+  private promptContainer: Container
+  private promptTextObject: Text
+  private prevInteract = false
+
+  constructor(app: Application, input: Input, getCharacterFeet: GetCharacterFeetFn) {
+    //put argument values to class properties
+    this.app = app
+    this.input = input
+    this.getCharacterFeet = getCharacterFeet
+    this.promptContainer = new Container()
+
+    this.promptTextObject = new Text({
+      text: '',
+      style: {
+        fill: 0xffffff,
+        fontSize: 16,
+      },
+    })
+
+    this.promptContainer.addChild(this.promptTextObject) //add text to container
+    this.app.stage.addChild(this.promptContainer) //add container to app
+    this.promptContainer.visible = false //make it initially not visible (will turn visible when close to an object)
+
+    //loop to update function every frame
+    this.app.ticker.add(() => this.update())
+  }
+
+  //register an interactable object, called from main.ts
+  addInteractable(interactable: Interactable) {
+    this.interactables.push(interactable)
+  }
+
+  //update function called every frame from app.ticker from pixi
+  update() {
+    /**
+     * Check distance between character and interactable objects
+     * Find closest interactable within radius
+     * Save as current active interactable
+     * Show prompt text when in range
+     * Listen for input.interact key press to trigger onInteract
+     */
+
+    //get the character position
+    const characterPosition = this.getCharacterFeet()
+    // console.log('characterPosition: ', characterPosition)
+    const characterPositionX = characterPosition.x
+    const characterPositionY = characterPosition.y
+
+    //loop through interactable objects to find closest
+    let closest: Interactable | null = null
+    let closestDist = Infinity
+
+    for (let i = 0; i < this.interactables.length; i++) {
+      const object = this.interactables[i]
+      const position = object.getPosition()
+
+      const distanceX = position.x - characterPositionX
+      const distanceY = position.y - characterPositionY
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+
+      if (distance <= object.radius && distance < closestDist) {
+        closest = object
+        closestDist = distance
+      }
+    }
+
+    this.current = closest
+    // console.log('Current object: ', this.current?.id ?? 'none')
+
+    //if there is a current active object, show the prompt text
+    if (this.current) {
+      // console.log(this.current.promptText)
+      this.promptTextObject.text = this.current.promptText //make the promptText the one we sent via main.ts
+      this.promptContainer.position.set(characterPositionX - 50, characterPositionY - 120) //position the promptContainer on the character
+      this.promptContainer.visible = true //make it visible when close to current object
+    } else {
+      this.promptContainer.visible = false //make it not visible when moving away from object
+    }
+
+    //function to be able to interact with objects on key press
+    const keyInteract = this.input.interact
+    const justPressed = keyInteract && !this.prevInteract
+
+    if (justPressed && this.current) {
+      this.current.onInteract()
+    }
+
+    this.prevInteract = keyInteract
+  }
+}
