@@ -2,6 +2,7 @@ import { Application } from 'pixi.js'
 import { Character } from './game/character/Character'
 import { Input } from './game/engine/Input'
 import { InteractionSystem } from './game/engine/InteractionSystem'
+import { Inventory } from './game/engine/Inventory'
 import { Room1 } from './game/rooms/room1/Room1'
 
 ;(async () => {
@@ -31,6 +32,9 @@ import { Room1 } from './game/rooms/room1/Room1'
 
   //add objects in front of character
   app.stage.addChild(room1.plant)
+
+  // --- Inventory ---
+  const inventory = new Inventory()
 
   // --- InteractionSystem ---
   const interactionSystem = new InteractionSystem(app, input, () => ({
@@ -69,6 +73,11 @@ import { Room1 } from './game/rooms/room1/Room1'
       y: room1.shovel.y + 40,
     }),
     radius: 30,
+    onInteract: () => {
+      inventory.addItem('shovel') //add to inventory
+      app.stage.removeChild(room1.shovel) //remove from canvas
+      interactionSystem.removeInteractable('shovel') //remove shovel as interactable object
+    },
     promptText: 'Press E to collect',
   })
 })()

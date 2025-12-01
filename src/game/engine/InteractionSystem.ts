@@ -115,4 +115,14 @@ export class InteractionSystem {
 
     this.prevInteract = keyInteract
   }
+
+  removeInteractable(id: string) {
+    this.interactables = this.interactables.filter((item) => item.id !== id) //remove object from list of interactables
+
+    //if the object you removed was active -> turn current to null
+    if (this.current && this.current.id === id) {
+      this.current = null
+      this.promptContainer.visible = false
+    }
+  }
 }
