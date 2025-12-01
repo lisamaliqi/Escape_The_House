@@ -37,15 +37,21 @@ import { Room1 } from './game/rooms/room1/Room1'
   const inventory = new Inventory()
 
   // --- InteractionSystem ---
-  const interactionSystem = new InteractionSystem(app, input, () => ({
-    // players "feet"
-    x: character.sprite.x,
-    y: character.sprite.y + 50, // same offset as the character
-  }))
+  const interactionSystem = new InteractionSystem(
+    app,
+    input,
+    () => ({
+      // players "feet"
+      x: character.sprite.x,
+      y: character.sprite.y + 50, // same offset as the character
+    }),
+    inventory
+  )
 
   //register safe as an interactable object
   interactionSystem.addInteractable({
     id: 'safe',
+    unlockId: null,
     getPosition: () => ({
       x: room1.safe.x,
       y: room1.safe.y + 40,
@@ -57,6 +63,7 @@ import { Room1 } from './game/rooms/room1/Room1'
 
   interactionSystem.addInteractable({
     id: 'blomkruka',
+    unlockId: 'shovel',
     getPosition: () => ({
       x: room1.plant.x,
       y: room1.plant.y + 40,
@@ -64,10 +71,12 @@ import { Room1 } from './game/rooms/room1/Room1'
     radius: 70,
     onInteract: room1.dig,
     promptText: 'Press E to Dig',
+    lockedText: 'Maybe find something to dig with?',
   })
 
   interactionSystem.addInteractable({
     id: 'shovel',
+    unlockId: null,
     getPosition: () => ({
       x: room1.shovel.x,
       y: room1.shovel.y + 40,

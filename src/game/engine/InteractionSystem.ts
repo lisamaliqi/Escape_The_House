@@ -1,5 +1,6 @@
 import { Application, Container, Text } from 'pixi.js'
 import type { Input } from './Input'
+import type { Inventory } from './Inventory'
 
 //interaction system to handle character interactions with objects
 /**
@@ -11,10 +12,12 @@ import type { Input } from './Input'
 
 interface Interactable {
   id: string //name of the interactable object
+  unlockId: string | null //name of the item that unlocks this object
   getPosition: () => { x: number; y: number } // ex. safe-position
   radius: number // how close the character must be to interact
   onInteract?: () => void //what happens on interaction
   promptText: string //text to show when in range of interaction
+  lockedText?: string
 }
 
 type GetCharacterFeetFn = () => { x: number; y: number }
@@ -24,17 +27,24 @@ export class InteractionSystem {
   private app: Application //pixi application
   private input: Input //key press
   private getCharacterFeet: GetCharacterFeetFn //get character position
+  private inventory: Inventory
   private interactables: Interactable[] = [] //list of interactable objects
   private current: Interactable | null = null //current active interactable object
   private promptContainer: Container
   private promptTextObject: Text
   private prevInteract = false
 
-  constructor(app: Application, input: Input, getCharacterFeet: GetCharacterFeetFn) {
+  constructor(
+    app: Application,
+    input: Input,
+    getCharacterFeet: GetCharacterFeetFn,
+    inventory: Inventory
+  ) {
     //put argument values to class properties
     this.app = app
     this.input = input
     this.getCharacterFeet = getCharacterFeet
+    this.inventory = inventory
     this.promptContainer = new Container()
 
     this.promptTextObject = new Text({
@@ -95,8 +105,23 @@ export class InteractionSystem {
     this.current = closest
     // console.log('Current object: ', this.current?.id ?? 'none')
 
-    //if there is a current active object, show the prompt text
     if (this.current) {
+      //does the object require an item to open?
+      if (this.current.unlockId) {
+        const hasRequired = this.inventory.hasItem(this.current.unlockId) //true -> has item in inventory
+
+        //player does not have item inside inventory
+        if (!hasRequired) {
+          const lockedText = this.current.lockedText ?? 'You cannot do this yet'
+
+          this.promptTextObject.text = lockedText //make the promptText the lockedText we sent via main.ts
+          this.promptContainer.position.set(characterPositionX - 50, characterPositionY - 120) //position the promptContainer on the character
+          this.promptContainer.visible = true //make lockedText prompt visible when close to current object
+
+          return
+        }
+      }
+
       // console.log(this.current.promptText)
       this.promptTextObject.text = this.current.promptText //make the promptText the one we sent via main.ts
       this.promptContainer.position.set(characterPositionX - 50, characterPositionY - 120) //position the promptContainer on the character
@@ -110,6 +135,12 @@ export class InteractionSystem {
     const justPressed = keyInteract && !this.prevInteract
 
     if (justPressed && this.current && this.current.onInteract) {
+      //if the object require something to unlock it with
+      if (this.current.unlockId && !this.inventory.hasItem(this.current.unlockId)) {
+        return // block interaction
+      }
+
+      //else do the interaction
       this.current.onInteract()
     }
 
