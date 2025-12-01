@@ -26,6 +26,7 @@ import { Room1 } from './game/rooms/room1/Room1'
   //add objects behind character
   app.stage.addChild(room1.safe)
   app.stage.addChild(room1.shovel)
+  app.stage.addChild(room1.door)
 
   //add character
   app.stage.addChild(character.sprite)
