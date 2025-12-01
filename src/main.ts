@@ -62,14 +62,34 @@ import { Room1 } from './game/rooms/room1/Room1'
   })
 
   interactionSystem.addInteractable({
-    id: 'blomkruka',
+    id: 'blomkruka-dig',
     unlockId: 'shovel',
     getPosition: () => ({
       x: room1.plant.x,
       y: room1.plant.y + 40,
     }),
     radius: 70,
-    onInteract: room1.dig,
+    onInteract: () => {
+      room1.dig() //change plant state (change frame), change this in future to third frame
+      interactionSystem.removeInteractable('blomkruka-dig') //remove so we can't "dig" again
+
+      //create new interactable object to collect key
+      interactionSystem.addInteractable({
+        id: 'blomkruka-key-collect',
+        unlockId: null,
+        getPosition: () => ({
+          x: room1.plant.x,
+          y: room1.plant.y + 40,
+        }),
+        radius: 70,
+        promptText: 'Press E to collect the key',
+        onInteract: () => {
+          inventory.addItem('key1') //add key to inventory
+          // room1.dig() //change this in future to correct state
+          interactionSystem.removeInteractable('blomkruka-key-collect') //remove to not collect again
+        },
+      })
+    },
     promptText: 'Press E to Dig',
     lockedText: 'Maybe find something to dig with?',
   })
