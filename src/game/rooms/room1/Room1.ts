@@ -1,5 +1,5 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
-import { createDoor1to2 } from './door1-2'
+import { createDoor1to2, type Door1to2 } from './door1-2'
 import { room1Objects } from './objects'
 import { createPlantPuzzle, type PlantPuzzle } from './plantPuzzle'
 import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
@@ -58,7 +58,7 @@ export const Room1 = async (app: Application) => {
   const plant = plantPuzzle.sprite
 
   //create door from room 1 to 2
-  const door1to2 = await createDoor1to2()
+  const door1to2: Door1to2 = await createDoor1to2()
   const door = door1to2.sprite
 
   //get objects for room 1
@@ -88,11 +88,12 @@ export const Room1 = async (app: Application) => {
   return {
     sprite: room,
     safe,
-    plant,
-    door,
-    isWalkable,
     toggleSafe: safePuzzle.toggle,
+    plant,
     dig: plantPuzzle.dig,
+    door,
+    openDoor: door1to2.openDoor,
+    isWalkable,
     shovel,
   }
 }

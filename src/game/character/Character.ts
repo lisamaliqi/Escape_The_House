@@ -4,7 +4,7 @@ import type { Room } from '../rooms/roomTypes'
 
 export class Character {
   sprite
-  speed = 3
+  speed = 6
 
   /**
    * Executed when "new Character(app, input, room)" is called in main

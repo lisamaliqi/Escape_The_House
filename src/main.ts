@@ -110,4 +110,20 @@ import { Room1 } from './game/rooms/room1/Room1'
     },
     promptText: 'Press E to collect',
   })
+
+  interactionSystem.addInteractable({
+    id: 'door1to2',
+    unlockId: 'key1',
+    getPosition: () => ({
+      x: room1.door.x + 70,
+      y: room1.door.y + 40,
+    }),
+    radius: 40,
+    onInteract: () => {
+      room1.openDoor()
+      interactionSystem.removeInteractable('door1to2')
+    },
+    promptText: 'Press E to use the key',
+    lockedText: 'Need a key to open',
+  })
 })()
