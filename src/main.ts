@@ -75,6 +75,10 @@ import { Room2 } from './game/rooms/room2/Room2'
 
     //register room2 interactables
     registerRoom2Interactables(interactionSystem, room2, inventory, app)
+
+    //position character by the door
+    character.sprite.x = room2.door.x + 20
+    character.sprite.y = room2.door.y + 20
   }
 
   registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2)
