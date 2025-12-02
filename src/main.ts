@@ -24,6 +24,10 @@ import { Room2 } from './game/rooms/room2/Room2'
   const room2 = await Room2(app) //create room2
   const character = new Character(app, input, room1) //create character
 
+  const room1State = {
+    door1to2Unlocked: false,
+  }
+
   //add room
   app.stage.addChild(room1.sprite)
 
@@ -70,16 +74,49 @@ import { Room2 } from './game/rooms/room2/Room2'
     app.stage.addChild(character.sprite)
     character.setRoom(room2)
 
+    //push prompt to the front
+    interactionSystem.bringPromptToFront()
+
     //delete old interactables
     interactionSystem.clear()
 
     //register room2 interactables
-    registerRoom2Interactables(interactionSystem, room2, inventory, app)
+    registerRoom2Interactables(interactionSystem, room2, inventory, app, useDoor2to1)
 
     //position character by the door
     character.sprite.x = room2.door.x + 20
     character.sprite.y = room2.door.y + 20
   }
 
-  registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2)
+  const useDoor2to1 = () => {
+    //remove all room2 sprites
+    app.stage.removeChild(room2.sprite)
+    app.stage.removeChild(room2.door)
+
+    //add room1 sprites
+    app.stage.addChild(room1.sprite)
+    app.stage.addChild(room1.safe)
+    app.stage.addChild(room1.shovel)
+    app.stage.addChild(room1.door)
+    app.stage.addChild(room1.plant)
+
+    //add character
+    app.stage.addChild(character.sprite)
+    character.setRoom(room1)
+
+    //push prompt to the front
+    interactionSystem.bringPromptToFront()
+
+    //delete old interactables
+    interactionSystem.clear()
+
+    //register room1 interactables
+    registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2, room1State)
+
+    //position character by the door
+    character.sprite.x = room1.door.x + 60
+    character.sprite.y = room1.door.y + 20
+  }
+
+  registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2, room1State)
 })()

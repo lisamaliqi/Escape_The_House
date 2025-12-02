@@ -3,12 +3,17 @@ import type { InteractionSystem } from '../../engine/InteractionSystem'
 import type { Inventory } from '../../engine/Inventory'
 import type { Room1 } from './Room1'
 
+type Room1State = {
+  door1to2Unlocked: boolean
+}
+
 export function registerRoom1Interactables(
   interactionSystem: InteractionSystem,
   room1: Room1,
   inventory: Inventory,
   app: Application,
-  useDoor1to2: () => void
+  useDoor1to2: () => void,
+  state: Room1State
 ) {
   //register safe as an interactable object
   interactionSystem.addInteractable({
@@ -72,34 +77,53 @@ export function registerRoom1Interactables(
     promptText: 'Press E to collect',
   })
 
-  interactionSystem.addInteractable({
-    id: 'door1to2',
-    unlockId: 'key1',
-    getPosition: () => ({
-      x: room1.door.x + 70,
-      y: room1.door.y + 40,
-    }),
-    radius: 40,
-    onInteract: () => {
-      room1.openDoor()
-      interactionSystem.removeInteractable('door1to2')
+  //if door is not unlocked, lock it up, if it is unlocked since before don't use key again
+  if (!state.door1to2Unlocked) {
+    interactionSystem.addInteractable({
+      id: 'door1to2',
+      unlockId: 'key1',
+      getPosition: () => ({
+        x: room1.door.x + 70,
+        y: room1.door.y + 40,
+      }),
+      radius: 40,
+      onInteract: () => {
+        room1.openDoor()
+        state.door1to2Unlocked = true
+        interactionSystem.removeInteractable('door1to2')
 
-      interactionSystem.addInteractable({
-        id: 'door1to2-enter',
-        unlockId: null,
-        getPosition: () => ({
-          x: room1.door.x + 70,
-          y: room1.door.y + 40,
-        }),
-        radius: 40,
-        promptText: 'Press E to go to Room 2',
-        onInteract: () => {
-          useDoor1to2() //use callback for using door 1 to 2 in room 1
-          interactionSystem.removeInteractable('door1to2-enter')
-        },
-      })
-    },
-    promptText: 'Press E to use the key',
-    lockedText: 'Need a key to open',
-  })
+        interactionSystem.addInteractable({
+          id: 'door1to2-enter',
+          unlockId: null,
+          getPosition: () => ({
+            x: room1.door.x + 70,
+            y: room1.door.y + 40,
+          }),
+          radius: 40,
+          promptText: 'Press E to go to Red room',
+          onInteract: () => {
+            useDoor1to2() //use callback for using door 1 to 2 in room 1
+            interactionSystem.removeInteractable('door1to2-enter')
+          },
+        })
+      },
+      promptText: 'Press E to use the key',
+      lockedText: 'Need a key to open',
+    })
+  } else {
+    interactionSystem.addInteractable({
+      id: 'door1to2-enter',
+      unlockId: null,
+      getPosition: () => ({
+        x: room1.door.x + 70,
+        y: room1.door.y + 40,
+      }),
+      radius: 40,
+      promptText: 'Press E to go to Red room',
+      onInteract: () => {
+        useDoor1to2()
+        interactionSystem.removeInteractable('door1to2-enter')
+      },
+    })
+  }
 }

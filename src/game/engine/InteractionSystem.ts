@@ -147,6 +147,11 @@ export class InteractionSystem {
     this.prevInteract = keyInteract
   }
 
+  //push the container to the top so that sprites don't go over the prompt = make the prompt not visible
+  bringPromptToFront() {
+    this.app.stage.addChild(this.promptContainer)
+  }
+
   removeInteractable(id: string) {
     this.interactables = this.interactables.filter((item) => item.id !== id) //remove object from list of interactables
 
