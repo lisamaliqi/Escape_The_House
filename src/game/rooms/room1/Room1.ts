@@ -4,6 +4,18 @@ import { room1Objects } from './objects'
 import { createPlantPuzzle, type PlantPuzzle } from './plantPuzzle'
 import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
 
+export type Room1 = {
+  sprite: Sprite
+  safe: Sprite
+  toggleSafe: () => void
+  plant: Sprite
+  dig: () => void
+  door: Sprite
+  openDoor: () => void
+  isWalkable: (worldX: number, worldY: number) => boolean
+  shovel: Sprite
+}
+
 // draw mask image to canvas and get pixel data
 const loadMask = (path: string): Promise<HTMLImageElement> =>
   new Promise((resolve) => {
@@ -30,7 +42,7 @@ const setupMask = (maskImage: HTMLImageElement) => {
   return { maskCanvas, maskData }
 }
 
-export const Room1 = async (app: Application) => {
+export const Room1 = async (app: Application): Promise<Room1> => {
   //load up room
   const texture = await Assets.load('/room1/room1.png')
   const room = new Sprite(texture)
