@@ -156,4 +156,10 @@ export class InteractionSystem {
       this.promptContainer.visible = false
     }
   }
+
+  clear() {
+    this.interactables = []
+    this.current = null
+    this.promptContainer.visible = false
+  }
 }

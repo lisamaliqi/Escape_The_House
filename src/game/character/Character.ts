@@ -5,6 +5,7 @@ import type { Room } from '../rooms/roomTypes'
 export class Character {
   sprite
   speed = 6
+  private room: Room
 
   /**
    * Executed when "new Character(app, input, room)" is called in main
@@ -24,8 +25,15 @@ export class Character {
     //starting position of the player
     this.sprite.position.set(app.screen.width / 2, app.screen.height / 2 + 60)
 
+    this.room = room
+
     //updates the canvas every frame
-    app.ticker.add(() => this.update(input, room))
+    app.ticker.add(() => this.update(input))
+  }
+
+  //set the room the character is inside
+  setRoom(room: Room) {
+    this.room = room
   }
 
   //update the characters position based on the input
@@ -34,7 +42,7 @@ export class Character {
    * @param input Input object, checks keys (up, down, left, right)
    * @param room Room object, checks for instance walkable function
    */
-  update = (input: Input, room: Room) => {
+  update = (input: Input) => {
     let { x, y } = this.sprite
 
     // // movement
@@ -55,9 +63,9 @@ export class Character {
 
     //all three points must be walkable to move
     const canWalk =
-      room.isWalkable(leftFootX, footY) &&
-      room.isWalkable(midFootX, footY) &&
-      room.isWalkable(rightFootX, footY)
+      this.room.isWalkable(leftFootX, footY) &&
+      this.room.isWalkable(midFootX, footY) &&
+      this.room.isWalkable(rightFootX, footY)
 
     if (canWalk) {
       this.sprite.x = x
