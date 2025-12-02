@@ -1,11 +1,7 @@
 import type { Application } from 'pixi.js'
 import type { InteractionSystem } from '../../engine/InteractionSystem'
 import type { Inventory } from '../../engine/Inventory'
-import type { Room1 } from './Room1'
-
-type Room1State = {
-  door1to2Unlocked: boolean
-}
+import type { Room1, Room1State } from './Room1'
 
 export function registerRoom1Interactables(
   interactionSystem: InteractionSystem,
@@ -28,54 +24,78 @@ export function registerRoom1Interactables(
     promptText: 'Press E to open',
   })
 
-  interactionSystem.addInteractable({
-    id: 'blomkruka-dig',
-    unlockId: 'shovel',
-    getPosition: () => ({
-      x: room1.plant.x,
-      y: room1.plant.y + 40,
-    }),
-    radius: 70,
-    onInteract: () => {
-      room1.dig() //change plant state (change frame), change this in future to third frame
-      interactionSystem.removeInteractable('blomkruka-dig') //remove so we can't "dig" again
+  if (!state.plantDig && !state.key1Collected) {
+    interactionSystem.addInteractable({
+      id: 'blomkruka-dig',
+      unlockId: 'shovel',
+      getPosition: () => ({
+        x: room1.plant.x,
+        y: room1.plant.y + 40,
+      }),
+      radius: 70,
+      onInteract: () => {
+        room1.dig() //change plant state (change frame), change this in future to third frame
+        state.plantDig = true
+        interactionSystem.removeInteractable('blomkruka-dig') //remove so we can't "dig" again
 
-      //create new interactable object to collect key
-      interactionSystem.addInteractable({
-        id: 'blomkruka-key-collect',
-        unlockId: null,
-        getPosition: () => ({
-          x: room1.plant.x,
-          y: room1.plant.y + 40,
-        }),
-        radius: 70,
-        promptText: 'Press E to collect the key',
-        onInteract: () => {
-          inventory.addItem('key1') //add key to inventory
-          // room1.dig() //change this in future to correct state
-          interactionSystem.removeInteractable('blomkruka-key-collect') //remove to not collect again
-        },
-      })
-    },
-    promptText: 'Press E to Dig',
-    lockedText: 'Maybe find something to dig with?',
-  })
+        //create new interactable object to collect key
+        interactionSystem.addInteractable({
+          id: 'blomkruka-key-collect',
+          unlockId: null,
+          getPosition: () => ({
+            x: room1.plant.x,
+            y: room1.plant.y + 40,
+          }),
+          radius: 70,
+          promptText: 'Press E to collect the key',
+          onInteract: () => {
+            inventory.addItem('key1') //add key to inventory
+            state.key1Collected = true
+            interactionSystem.removeInteractable('blomkruka-key-collect') //remove to not collect again
+          },
+        })
+      },
+      promptText: 'Press E to Dig',
+      lockedText: 'Maybe find something to dig with?',
+    })
+  }
 
-  interactionSystem.addInteractable({
-    id: 'shovel',
-    unlockId: null,
-    getPosition: () => ({
-      x: room1.shovel.x,
-      y: room1.shovel.y + 40,
-    }),
-    radius: 30,
-    onInteract: () => {
-      inventory.addItem('shovel') //add to inventory
-      app.stage.removeChild(room1.shovel) //remove from canvas
-      interactionSystem.removeInteractable('shovel') //remove shovel as interactable object
-    },
-    promptText: 'Press E to collect',
-  })
+  if (state.plantDig && !state.key1Collected) {
+    interactionSystem.addInteractable({
+      id: 'blomkruka-key-collect',
+      unlockId: null,
+      getPosition: () => ({
+        x: room1.plant.x,
+        y: room1.plant.y + 40,
+      }),
+      radius: 70,
+      promptText: 'Press E to collect the key',
+      onInteract: () => {
+        inventory.addItem('key1')
+        state.key1Collected = true
+        interactionSystem.removeInteractable('blomkruka-key-collect')
+      },
+    })
+  }
+
+  if (!state.shovelCollected) {
+    interactionSystem.addInteractable({
+      id: 'shovel',
+      unlockId: null,
+      getPosition: () => ({
+        x: room1.shovel.x,
+        y: room1.shovel.y + 40,
+      }),
+      radius: 30,
+      onInteract: () => {
+        inventory.addItem('shovel') //add to inventory
+        app.stage.removeChild(room1.shovel) //remove from canvas
+        interactionSystem.removeInteractable('shovel') //remove shovel as interactable object
+        state.shovelCollected = true //change state
+      },
+      promptText: 'Press E to collect',
+    })
+  }
 
   //if door is not unlocked, lock it up, if it is unlocked since before don't use key again
   if (!state.door1to2Unlocked) {

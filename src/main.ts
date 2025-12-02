@@ -4,7 +4,7 @@ import { Input } from './game/engine/Input'
 import { InteractionSystem } from './game/engine/InteractionSystem'
 import { Inventory } from './game/engine/Inventory'
 import { registerRoom1Interactables } from './game/rooms/room1/Interactables'
-import { Room1 } from './game/rooms/room1/Room1'
+import { Room1, type Room1State } from './game/rooms/room1/Room1'
 import { registerRoom2Interactables } from './game/rooms/room2/Interactables'
 import { Room2 } from './game/rooms/room2/Room2'
 
@@ -24,8 +24,11 @@ import { Room2 } from './game/rooms/room2/Room2'
   const room2 = await Room2(app) //create room2
   const character = new Character(app, input, room1) //create character
 
-  const room1State = {
+  const room1State: Room1State = {
     door1to2Unlocked: false,
+    shovelCollected: false,
+    plantDig: false,
+    key1Collected: false,
   }
 
   //add room
@@ -96,13 +99,14 @@ import { Room2 } from './game/rooms/room2/Room2'
     //add room1 sprites
     app.stage.addChild(room1.sprite)
     app.stage.addChild(room1.safe)
-    app.stage.addChild(room1.shovel)
+    if (!room1State.shovelCollected) app.stage.addChild(room1.shovel)
     app.stage.addChild(room1.door)
-    app.stage.addChild(room1.plant)
 
     //add character
     app.stage.addChild(character.sprite)
     character.setRoom(room1)
+
+    app.stage.addChild(room1.plant)
 
     //push prompt to the front
     interactionSystem.bringPromptToFront()

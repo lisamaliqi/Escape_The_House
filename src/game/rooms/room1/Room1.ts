@@ -16,6 +16,13 @@ export type Room1 = {
   shovel: Sprite
 }
 
+export type Room1State = {
+  door1to2Unlocked: boolean
+  shovelCollected: boolean
+  plantDig: boolean
+  key1Collected: boolean
+}
+
 // draw mask image to canvas and get pixel data
 const loadMask = (path: string): Promise<HTMLImageElement> =>
   new Promise((resolve) => {
