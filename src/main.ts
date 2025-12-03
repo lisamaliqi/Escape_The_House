@@ -72,6 +72,7 @@ import { Room2 } from './game/rooms/room2/Room2'
     //add room2 sprites
     app.stage.addChild(room2.sprite)
     app.stage.addChild(room2.door)
+    app.stage.addChild(room2.drawer)
 
     //add character
     app.stage.addChild(character.sprite)

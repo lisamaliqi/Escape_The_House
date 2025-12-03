@@ -1,9 +1,11 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
 import { createDoor2to1, type Door2to1 } from './door2-1'
+import { createDrawerPuzzle, type DrawerPuzzle } from './drawerPuzzle'
 
 export type Room2 = {
   sprite: Sprite
   door: Sprite
+  drawer: Sprite
   isWalkable: (worldX: number, worldY: number) => boolean
 }
 
@@ -46,6 +48,9 @@ export const Room2 = async (app: Application): Promise<Room2> => {
   const door2to1: Door2to1 = await createDoor2to1()
   const door = door2to1.sprite
 
+  const drawerPuzzle: DrawerPuzzle = await createDrawerPuzzle()
+  const drawer = drawerPuzzle.sprite
+
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
     const baseW = texture.width
@@ -68,6 +73,7 @@ export const Room2 = async (app: Application): Promise<Room2> => {
   return {
     sprite: room,
     door,
+    drawer,
     isWalkable,
   }
 }
