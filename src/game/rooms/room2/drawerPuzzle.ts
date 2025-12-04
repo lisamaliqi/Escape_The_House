@@ -1,7 +1,10 @@
 import { Assets, Sprite } from 'pixi.js'
 
+export type DrawerState = 'closed' | 'openWithNote' | 'opened'
+
 export type DrawerPuzzle = {
   sprite: Sprite
+  openDrawer: () => void
 }
 export const createDrawerPuzzle = async (): Promise<DrawerPuzzle> => {
   const drawerSheet = await Assets.load('/room2/objects/drawer/drawer-with-note.json')
@@ -16,7 +19,29 @@ export const createDrawerPuzzle = async (): Promise<DrawerPuzzle> => {
   drawer.x = 470
   drawer.y = 205
 
+  let drawerState: DrawerState = 'closed'
+
+  const setDrawerState = (state: DrawerState) => {
+    drawerState = state
+    if (state === 'closed') drawer.texture = drawerClosed
+    if (state === 'openWithNote') drawer.texture = drawerOpenWithNote
+    if (state === 'opened') drawer.texture = drawerOpened
+  }
+
+  setDrawerState('closed')
+
+  const openDrawer = () => {
+    if (drawerState === 'closed') {
+      setDrawerState('openWithNote')
+    } else if (drawerState === 'openWithNote') {
+      setDrawerState('opened')
+    } else if (drawerState === 'opened') {
+      setDrawerState('closed')
+    }
+  }
+
   return {
     sprite: drawer,
+    openDrawer,
   }
 }

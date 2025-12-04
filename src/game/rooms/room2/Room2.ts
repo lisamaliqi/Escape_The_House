@@ -6,6 +6,7 @@ export type Room2 = {
   sprite: Sprite
   door: Sprite
   drawer: Sprite
+  openDrawer: () => void
   isWalkable: (worldX: number, worldY: number) => boolean
 }
 
@@ -74,6 +75,7 @@ export const Room2 = async (app: Application): Promise<Room2> => {
     sprite: room,
     door,
     drawer,
+    openDrawer: drawerPuzzle.openDrawer,
     isWalkable,
   }
 }

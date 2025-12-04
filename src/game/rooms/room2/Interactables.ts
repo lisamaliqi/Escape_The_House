@@ -20,4 +20,18 @@ export function registerRoom2Interactables(
       interactionSystem.removeInteractable('door2to1-enter')
     },
   })
+
+  interactionSystem.addInteractable({
+    id: 'drawer-with-note',
+    unlockId: null,
+    getPosition: () => ({
+      x: room2.drawer.x,
+      y: room2.drawer.y,
+    }),
+    radius: 100,
+    promptText: 'Press E to open drawer',
+    onInteract: () => {
+      room2.openDrawer()
+    },
+  })
 }
