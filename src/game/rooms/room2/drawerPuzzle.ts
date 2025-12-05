@@ -4,7 +4,8 @@ export type DrawerState = 'closed' | 'openWithNote' | 'opened'
 
 export type DrawerPuzzle = {
   sprite: Sprite
-  openDrawer: () => void
+  getDrawerState: () => DrawerState
+  setDrawerState: (state: DrawerState) => void
 }
 export const createDrawerPuzzle = async (): Promise<DrawerPuzzle> => {
   const drawerSheet = await Assets.load('/room2/objects/drawer/drawer-with-note.json')
@@ -21,6 +22,8 @@ export const createDrawerPuzzle = async (): Promise<DrawerPuzzle> => {
 
   let drawerState: DrawerState = 'closed'
 
+  const getDrawerState = () => drawerState
+
   const setDrawerState = (state: DrawerState) => {
     drawerState = state
     if (state === 'closed') drawer.texture = drawerClosed
@@ -30,18 +33,9 @@ export const createDrawerPuzzle = async (): Promise<DrawerPuzzle> => {
 
   setDrawerState('closed')
 
-  const openDrawer = () => {
-    if (drawerState === 'closed') {
-      setDrawerState('openWithNote')
-    } else if (drawerState === 'openWithNote') {
-      setDrawerState('opened')
-    } else if (drawerState === 'opened') {
-      setDrawerState('closed')
-    }
-  }
-
   return {
     sprite: drawer,
-    openDrawer,
+    getDrawerState,
+    setDrawerState,
   }
 }

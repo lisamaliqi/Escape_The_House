@@ -6,7 +6,7 @@ import { Inventory } from './game/engine/Inventory'
 import { registerRoom1Interactables } from './game/rooms/room1/Interactables'
 import { Room1, type Room1State } from './game/rooms/room1/Room1'
 import { registerRoom2Interactables } from './game/rooms/room2/Interactables'
-import { Room2 } from './game/rooms/room2/Room2'
+import { Room2, type Room2State } from './game/rooms/room2/Room2'
 
 ;(async () => {
   //initialize app
@@ -29,6 +29,10 @@ import { Room2 } from './game/rooms/room2/Room2'
     shovelCollected: false,
     plantDig: false,
     key1Collected: false,
+  }
+
+  const room2State: Room2State = {
+    noteInDrawerCollected: false,
   }
 
   //add room
@@ -72,7 +76,7 @@ import { Room2 } from './game/rooms/room2/Room2'
     //add room2 sprites
     app.stage.addChild(room2.sprite)
     app.stage.addChild(room2.door)
-    app.stage.addChild(room2.drawer)
+    app.stage.addChild(room2.drawer.sprite)
 
     //add character
     app.stage.addChild(character.sprite)
@@ -85,7 +89,7 @@ import { Room2 } from './game/rooms/room2/Room2'
     interactionSystem.clear()
 
     //register room2 interactables
-    registerRoom2Interactables(interactionSystem, room2, useDoor2to1)
+    registerRoom2Interactables(interactionSystem, room2, inventory, useDoor2to1, room2State)
 
     //position character by the door
     character.sprite.x = room2.door.x + 20

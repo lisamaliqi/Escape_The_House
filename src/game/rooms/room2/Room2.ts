@@ -5,9 +5,12 @@ import { createDrawerPuzzle, type DrawerPuzzle } from './drawerPuzzle'
 export type Room2 = {
   sprite: Sprite
   door: Sprite
-  drawer: Sprite
-  openDrawer: () => void
+  drawer: DrawerPuzzle
   isWalkable: (worldX: number, worldY: number) => boolean
+}
+
+export type Room2State = {
+  noteInDrawerCollected: boolean
 }
 
 //load mask to canvas
@@ -50,7 +53,7 @@ export const Room2 = async (app: Application): Promise<Room2> => {
   const door = door2to1.sprite
 
   const drawerPuzzle: DrawerPuzzle = await createDrawerPuzzle()
-  const drawer = drawerPuzzle.sprite
+  //   const drawer = drawerPuzzle.sprite
 
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
@@ -74,8 +77,7 @@ export const Room2 = async (app: Application): Promise<Room2> => {
   return {
     sprite: room,
     door,
-    drawer,
-    openDrawer: drawerPuzzle.openDrawer,
+    drawer: drawerPuzzle,
     isWalkable,
   }
 }
