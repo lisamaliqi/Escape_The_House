@@ -9,6 +9,11 @@ import { registerRoom2Interactables } from './game/rooms/room2/Interactables'
 import { Room2, type Room2State } from './game/rooms/room2/Room2'
 
 ;(async () => {
+  //create wrapper for game
+  const wrapper = document.createElement('div')
+  wrapper.id = 'game-wrapper'
+  document.body.appendChild(wrapper)
+
   //initialize app
   const app = new Application()
   await app.init({
@@ -17,12 +22,12 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
   })
 
   //put canvas on the page
-  document.body.appendChild(app.canvas)
+  wrapper.appendChild(app.canvas)
 
   // --- Inventory ---
   const inventoryContainer = document.createElement('div')
   inventoryContainer.id = 'inventory-bar'
-  document.body.appendChild(inventoryContainer)
+  wrapper.appendChild(inventoryContainer)
 
   const inventory = new Inventory(inventoryContainer)
 
