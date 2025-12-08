@@ -35,4 +35,40 @@ canvas {
   max-width: 100%;
   max-height: 100%;
   image-rendering: pixelated;
+  cursor: pointer;
+}
+
+#inventory-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.inventory-overlay-box {
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-overlay-box img {
+  width: 300px;
+  image-rendering: pixelated;
+}
+
+.inventory-overlay-close {
+  padding: 6px 12px;
+  background: #333;
+  border: 1px solid #666;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
 }
