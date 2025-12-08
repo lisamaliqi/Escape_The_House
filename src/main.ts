@@ -19,6 +19,13 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
   //put canvas on the page
   document.body.appendChild(app.canvas)
 
+  // --- Inventory ---
+  const inventoryContainer = document.createElement('div')
+  inventoryContainer.id = 'inventory-bar'
+  document.body.appendChild(inventoryContainer)
+
+  const inventory = new Inventory(inventoryContainer)
+
   const input = new Input() //init input handler (keys)
   const room1 = await Room1(app) //create room1
   const room2 = await Room2(app) //create room2
@@ -48,9 +55,6 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
 
   //add objects in front of character
   app.stage.addChild(room1.plant)
-
-  // --- Inventory ---
-  const inventory = new Inventory()
 
   // --- InteractionSystem ---
   const interactionSystem = new InteractionSystem(

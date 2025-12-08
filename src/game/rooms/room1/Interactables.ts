@@ -49,7 +49,7 @@ export function registerRoom1Interactables(
           radius: 70,
           promptText: 'Press E to collect the key',
           onInteract: () => {
-            inventory.addItem('key1') //add key to inventory
+            inventory.addItem('redKey') //add key to inventory
             state.key1Collected = true
             interactionSystem.removeInteractable('blomkruka-key-collect') //remove to not collect again
           },
@@ -71,7 +71,7 @@ export function registerRoom1Interactables(
       radius: 70,
       promptText: 'Press E to collect the key',
       onInteract: () => {
-        inventory.addItem('key1')
+        inventory.addItem('redKey')
         state.key1Collected = true
         interactionSystem.removeInteractable('blomkruka-key-collect')
       },
@@ -101,7 +101,7 @@ export function registerRoom1Interactables(
   if (!state.door1to2Unlocked) {
     interactionSystem.addInteractable({
       id: 'door1to2',
-      unlockId: 'key1',
+      unlockId: 'redKey',
       getPosition: () => ({
         x: room1.door.x + 70,
         y: room1.door.y + 40,

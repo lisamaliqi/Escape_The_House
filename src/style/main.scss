@@ -11,3 +11,20 @@ body {
 canvas {
   display: block;
 }
+
+#inventory-bar {
+  margin-top: 8px;
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  background: #111;
+  border-top: 1px solid #333;
+}
+
+.inventory-item {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+}
