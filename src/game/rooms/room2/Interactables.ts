@@ -113,4 +113,94 @@ export function registerRoom2Interactables(
   } else if (currentDrawerState === 'opened') {
     addOpenedDrawer()
   }
+
+  //--- PAINTING ---
+  const removeAllPaintingInteractables = () => {
+    interactionSystem.removeInteractable('stillPainting')
+    interactionSystem.removeInteractable('moved-with-colorWheel')
+    interactionSystem.removeInteractable('movedPainting')
+  }
+
+  const addStillPainting = () => {
+    removeAllPaintingInteractables()
+
+    interactionSystem.addInteractable({
+      id: 'stillPainting',
+      unlockId: null,
+      getPosition: () => ({
+        x: room2.painting.sprite.x,
+        y: room2.painting.sprite.y + 70,
+      }),
+      radius: 70,
+      promptText: 'Press E to Move',
+      onInteract: () => {
+        if (!state.colorWheelCollected) {
+          //show colorWheel sprite frame
+          room2.painting.setPaintingState('withColorWheel')
+          removeAllPaintingInteractables()
+          addMovedPaintingWithColorWheel()
+        } else {
+          //show regular moved painting frame
+          room2.painting.setPaintingState('moved')
+          removeAllPaintingInteractables()
+          addMovedPainting()
+        }
+      },
+    })
+  }
+
+  const addMovedPaintingWithColorWheel = () => {
+    removeAllPaintingInteractables()
+    room2.painting.setPaintingState('withColorWheel')
+
+    interactionSystem.addInteractable({
+      id: 'moved-with-colorWheel',
+      unlockId: null,
+      getPosition: () => ({
+        x: room2.painting.sprite.x,
+        y: room2.painting.sprite.y + 70,
+      }),
+      radius: 70,
+      promptText: 'Press E to Collect Color Wheel',
+      onInteract: () => {
+        inventory.addItem('colorWheel')
+        state.colorWheelCollected = true
+        room2.painting.setPaintingState('moved')
+        removeAllPaintingInteractables()
+        addMovedPainting()
+      },
+    })
+  }
+
+  const addMovedPainting = () => {
+    removeAllPaintingInteractables()
+    room2.painting.setPaintingState('moved')
+
+    interactionSystem.addInteractable({
+      id: 'movedPainting',
+      unlockId: null,
+      getPosition: () => ({
+        x: room2.painting.sprite.x,
+        y: room2.painting.sprite.y + 70,
+      }),
+      radius: 70,
+      promptText: 'Press E to Move',
+      onInteract: () => {
+        room2.painting.setPaintingState('still')
+        removeAllPaintingInteractables()
+        addStillPainting()
+      },
+    })
+  }
+
+  //init painting when going to the room
+  const currentPaintingState = room2.painting.getPaintingState()
+
+  if (currentPaintingState === 'still') {
+    addStillPainting()
+  } else if (currentPaintingState === 'withColorWheel') {
+    addMovedPaintingWithColorWheel()
+  } else if (currentPaintingState === 'moved') {
+    addMovedPainting()
+  }
 }
