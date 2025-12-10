@@ -1,7 +1,9 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
+import { createDoor3to2, type Door3to2 } from './door3-2'
 
 export type Room3 = {
   sprite: Sprite
+  door: Sprite
   isWalkable: (worldX: number, worldY: number) => boolean
 }
 
@@ -41,6 +43,9 @@ export const Room3 = async (app: Application): Promise<Room3> => {
   const maskImage = await loadMask('/room3/room3_mask.png')
   const { maskCanvas, maskData } = setupMask(maskImage)
 
+  const door3to2: Door3to2 = await createDoor3to2()
+  const door = door3to2.sprite
+
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
     const baseW = texture.width
@@ -62,6 +67,7 @@ export const Room3 = async (app: Application): Promise<Room3> => {
 
   return {
     sprite: room,
+    door,
     isWalkable,
   }
 }

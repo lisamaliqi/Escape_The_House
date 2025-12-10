@@ -164,6 +164,7 @@ import { Room3 } from './game/rooms/room3/Room3'
 
     //add room3 sprites
     app.stage.addChild(room3.sprite)
+    app.stage.addChild(room3.door)
 
     app.stage.addChild(character.sprite)
     character.setRoom(room3)
@@ -174,9 +175,9 @@ import { Room3 } from './game/rooms/room3/Room3'
     //delete old interactables
     interactionSystem.clear()
 
-    //temporary, will change to door position when i add door
-    character.sprite.x = 300
-    character.sprite.y = 300
+    //position character by the door
+    character.sprite.x = room3.door.x + 60
+    character.sprite.y = room3.door.y + 20
   }
 
   registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2, room1State)
