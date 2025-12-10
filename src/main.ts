@@ -46,6 +46,7 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
   const room2State: Room2State = {
     noteInDrawerCollected: false,
     colorWheelCollected: false,
+    door2to3Opened: false,
   }
 
   //add room
@@ -86,6 +87,7 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
     //add room2 sprites
     app.stage.addChild(room2.sprite)
     app.stage.addChild(room2.door)
+    app.stage.addChild(room2.door2)
     app.stage.addChild(room2.drawer.sprite)
     app.stage.addChild(room2.painting.sprite)
 

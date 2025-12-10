@@ -6,7 +6,6 @@ export type PaintingPuzzle = {
   sprite: Sprite
   getPaintingState: () => PaintingState
   setPaintingState: (state: PaintingState) => void
-  // movePainting: () => void
 }
 
 export const createPaintingPuzzle = async (): Promise<PaintingPuzzle> => {
@@ -37,20 +36,9 @@ export const createPaintingPuzzle = async (): Promise<PaintingPuzzle> => {
 
   setPaintingState('still')
 
-  // const movePainting = () => {
-  //   if (paintingState === 'still') {
-  //     setPaintingState('withColorWheel')
-  //   } else if (paintingState === 'withColorWheel') {
-  //     setPaintingState('moved')
-  //   } else if (paintingState === 'moved') {
-  //     setPaintingState('still')
-  //   }
-  // }
-
   return {
     sprite: painting,
     getPaintingState,
     setPaintingState,
-    // movePainting,
   }
 }

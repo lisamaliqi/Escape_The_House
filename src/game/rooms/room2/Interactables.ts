@@ -203,4 +203,57 @@ export function registerRoom2Interactables(
   } else if (currentPaintingState === 'moved') {
     addMovedPainting()
   }
+
+  //---DOOR 2 TO 3---
+  if (!state.door2to3Opened) {
+    //if door is closed
+    interactionSystem.addInteractable({
+      id: 'door2to3-open',
+      unlockId: null,
+      getPosition: () => ({
+        x: room2.door2.x + 70,
+        y: room2.door2.y + 40,
+      }),
+      radius: 40,
+      promptText: 'Press E to open the door',
+      onInteract: () => {
+        room2.openDoor2()
+        state.door2to3Opened = true
+
+        interactionSystem.removeInteractable('door2to3-open')
+
+        //add zone to walk to room3 (needs function to walk to room 3)
+        interactionSystem.addInteractable({
+          id: 'door2to3-enter',
+          unlockId: null,
+          getPosition: () => ({
+            x: room2.door2.x + 70,
+            y: room2.door2.y + 40,
+          }),
+          radius: 40,
+          promptText: 'Press E to go to Room 3',
+          onInteract: () => {
+            // useDoor2to3()
+            interactionSystem.removeInteractable('door2to3-enter')
+          },
+        })
+      },
+    })
+  } else {
+    //door already open, stays open even when changing rooms
+    interactionSystem.addInteractable({
+      id: 'door2to3-enter',
+      unlockId: null,
+      getPosition: () => ({
+        x: room2.door2.x + 70,
+        y: room2.door2.y + 40,
+      }),
+      radius: 40,
+      promptText: 'Press E to go to Room 3',
+      onInteract: () => {
+        // useDoor2to3()
+        interactionSystem.removeInteractable('door2to3-enter')
+      },
+    })
+  }
 }
