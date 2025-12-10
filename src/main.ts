@@ -7,6 +7,7 @@ import { registerRoom1Interactables } from './game/rooms/room1/Interactables'
 import { Room1, type Room1State } from './game/rooms/room1/Room1'
 import { registerRoom2Interactables } from './game/rooms/room2/Interactables'
 import { Room2, type Room2State } from './game/rooms/room2/Room2'
+import { Room3 } from './game/rooms/room3/Room3'
 
 ;(async () => {
   //create wrapper for game
@@ -34,6 +35,7 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
   const input = new Input() //init input handler (keys)
   const room1 = await Room1(app) //create room1
   const room2 = await Room2(app) //create room2
+  const room3 = await Room3(app) //create room2
   const character = new Character(app, input, room1) //create character
 
   const room1State: Room1State = {
@@ -102,7 +104,14 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
     interactionSystem.clear()
 
     //register room2 interactables
-    registerRoom2Interactables(interactionSystem, room2, inventory, useDoor2to1, room2State)
+    registerRoom2Interactables(
+      interactionSystem,
+      room2,
+      inventory,
+      useDoor2to1,
+      useDoor2to3,
+      room2State
+    )
 
     //position character by the door
     character.sprite.x = room2.door.x + 20
@@ -113,6 +122,10 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
     //remove all room2 sprites
     app.stage.removeChild(room2.sprite)
     app.stage.removeChild(room2.door)
+    app.stage.removeChild(room2.door2)
+    app.stage.removeChild(room2.drawer.sprite)
+    app.stage.removeChild(room2.drawer.sprite)
+    app.stage.removeChild(room2.painting.sprite)
 
     //add room1 sprites
     app.stage.addChild(room1.sprite)
@@ -138,6 +151,32 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
     //position character by the door
     character.sprite.x = room1.door.x + 60
     character.sprite.y = room1.door.y + 20
+  }
+
+  const useDoor2to3 = () => {
+    //remove all room2 sprites
+    app.stage.removeChild(room2.sprite)
+    app.stage.removeChild(room2.door)
+    app.stage.removeChild(room2.door2)
+    app.stage.removeChild(room2.drawer.sprite)
+    app.stage.removeChild(room2.drawer.sprite)
+    app.stage.removeChild(room2.painting.sprite)
+
+    //add room3 sprites
+    app.stage.addChild(room3.sprite)
+
+    app.stage.addChild(character.sprite)
+    character.setRoom(room3)
+
+    //push prompt to the front
+    interactionSystem.bringPromptToFront()
+
+    //delete old interactables
+    interactionSystem.clear()
+
+    //temporary, will change to door position when i add door
+    character.sprite.x = 300
+    character.sprite.y = 300
   }
 
   registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2, room1State)

@@ -7,6 +7,7 @@ export function registerRoom2Interactables(
   room2: Room2,
   inventory: Inventory,
   useDoor2to1: () => void,
+  useDoor2to3: () => void,
   state: Room2State
 ) {
   interactionSystem.addInteractable({
@@ -233,7 +234,7 @@ export function registerRoom2Interactables(
           radius: 40,
           promptText: 'Press E to go to Room 3',
           onInteract: () => {
-            // useDoor2to3()
+            useDoor2to3()
             interactionSystem.removeInteractable('door2to3-enter')
           },
         })
@@ -251,7 +252,7 @@ export function registerRoom2Interactables(
       radius: 40,
       promptText: 'Press E to go to Room 3',
       onInteract: () => {
-        // useDoor2to3()
+        useDoor2to3()
         interactionSystem.removeInteractable('door2to3-enter')
       },
     })
