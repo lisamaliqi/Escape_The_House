@@ -172,6 +172,8 @@ import { Room3 } from './game/rooms/room3/Room3'
     app.stage.addChild(character.sprite)
     character.setRoom(room3)
 
+    app.stage.addChild(room3.sinkCabinet)
+
     //push prompt to the front
     interactionSystem.bringPromptToFront()
 
@@ -190,6 +192,7 @@ import { Room3 } from './game/rooms/room3/Room3'
     //remove room3 sprites
     app.stage.removeChild(room3.sprite)
     app.stage.removeChild(room3.door)
+    app.stage.removeChild(room3.sinkCabinet)
 
     //add room2 sprites
     app.stage.addChild(room2.sprite)
