@@ -10,7 +10,7 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
 import { registerRoom3Interactables } from './game/rooms/room3/Interactables'
 // import { registerRoomInteractables } from './game/rooms/room1/Interactables'
 
-import { Room3 } from './game/rooms/room3/Room3'
+import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
 ;(async () => {
   //create wrapper for game
@@ -52,6 +52,10 @@ import { Room3 } from './game/rooms/room3/Room3'
     noteInDrawerCollected: false,
     colorWheelCollected: false,
     door2to3Opened: false,
+  }
+
+  const room3State: Room3State = {
+    noteInCabinetCollected: false,
   }
 
   //add room
@@ -172,7 +176,7 @@ import { Room3 } from './game/rooms/room3/Room3'
     app.stage.addChild(character.sprite)
     character.setRoom(room3)
 
-    app.stage.addChild(room3.sinkCabinet)
+    app.stage.addChild(room3.sinkCabinetPuzzle.sprite)
 
     //push prompt to the front
     interactionSystem.bringPromptToFront()
@@ -181,7 +185,7 @@ import { Room3 } from './game/rooms/room3/Room3'
     interactionSystem.clear()
 
     //register room3 interactables
-    registerRoom3Interactables(interactionSystem, room3, useDoor3to2)
+    registerRoom3Interactables(interactionSystem, room3, inventory, useDoor3to2, room3State)
 
     //position character by the door
     character.sprite.x = room3.door.x + 20
@@ -192,7 +196,7 @@ import { Room3 } from './game/rooms/room3/Room3'
     //remove room3 sprites
     app.stage.removeChild(room3.sprite)
     app.stage.removeChild(room3.door)
-    app.stage.removeChild(room3.sinkCabinet)
+    app.stage.removeChild(room3.sinkCabinetPuzzle.sprite)
 
     //add room2 sprites
     app.stage.addChild(room2.sprite)

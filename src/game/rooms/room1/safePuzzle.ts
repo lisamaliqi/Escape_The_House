@@ -35,7 +35,7 @@ export const createSafePuzzle = async (): Promise<SafePuzzle> => {
   let safeState: SafeState = 'closed'
   let isTransitioning = false
 
-  const SAFE_CODE = '123456' // 6-digit code
+  const SAFE_CODE = '316472' // 6-digit code
   let isUnlocked = false // becomes true after correct code
 
   //function to change safe state (animation)

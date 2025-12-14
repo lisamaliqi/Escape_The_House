@@ -5,8 +5,12 @@ import { createSinkCabinetPuzzle, type SinkCabinetPuzzle } from './sinkCabinet'
 export type Room3 = {
   sprite: Sprite
   door: Sprite
-  sinkCabinet: Sprite
+  sinkCabinetPuzzle: SinkCabinetPuzzle
   isWalkable: (worldX: number, worldY: number) => boolean
+}
+
+export type Room3State = {
+  noteInCabinetCollected: boolean
 }
 
 //load mask to canvas
@@ -48,8 +52,8 @@ export const Room3 = async (app: Application): Promise<Room3> => {
   const door3to2: Door3to2 = await createDoor3to2()
   const door = door3to2.sprite
 
-  const sinkCabinetPuzzle: SinkCabinetPuzzle = await createSinkCabinetPuzzle()
-  const sinkCabinet = sinkCabinetPuzzle.sprite
+  const sinkCabinetPuzzle: SinkCabinetPuzzle = await createSinkCabinetPuzzle(app)
+  // const sinkCabinet = sinkCabinetPuzzle.sprite
 
   const isWalkable = (worldX: number, worldY: number) => {
     // convert world → local (inside room1 image)
@@ -73,7 +77,7 @@ export const Room3 = async (app: Application): Promise<Room3> => {
   return {
     sprite: room,
     door,
-    sinkCabinet,
+    sinkCabinetPuzzle,
     isWalkable,
   }
 }
