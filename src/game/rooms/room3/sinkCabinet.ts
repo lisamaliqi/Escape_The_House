@@ -61,6 +61,13 @@ const openColorLockPixi = (
     title.position.set(px + 16, py + 12)
     root.addChild(title)
 
+    const hint = new Text({
+      text: 'Hint: Use the rooms and the color wheel to find the right order.',
+      style: { fill: 0xffffff, fontSize: 14, wordWrap: true, wordWrapWidth: w - 32 },
+    })
+    hint.position.set(px + 16, py + 36)
+    root.addChild(hint)
+
     // slots (3 rutor som fylls)
     const slotBoxes: Graphics[] = []
     for (let i = 0; i < slots; i++) {
@@ -74,7 +81,7 @@ const openColorLockPixi = (
         const c = picked[i]
         const g = slotBoxes[i]
         g.clear()
-        g.roundRect(px + 16 + i * 44, py + 48, 36, 36, 8)
+        g.roundRect(px + 16 + i * 44, py + 68, 36, 36, 8)
           .fill(c ? COLOR_HEX[c] : 0x1b1b1b)
           .stroke({ color: 0x444444, width: 2 })
       }
@@ -82,7 +89,7 @@ const openColorLockPixi = (
 
     // knappar (8 färger)
     const startX = px + 16
-    const startY = py + 100
+    const startY = py + 120
     const size = 44
     const gap = 12
     const cols = 4
