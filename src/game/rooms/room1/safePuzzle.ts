@@ -4,7 +4,10 @@ export type SafeState = 'closed' | 'half' | 'open'
 
 export type SafePuzzle = {
   sprite: Sprite
-  toggle: () => void
+  getSafeState: () => SafeState
+  setSafeState: (state: SafeState) => void
+  takeKey: () => void
+  hasKey: () => boolean
 }
 
 /**
@@ -19,8 +22,10 @@ export const createSafePuzzle = async (): Promise<SafePuzzle> => {
   const safeSheet = await Assets.load('/room1/objects/safe/safe.json')
 
   const safeClosed = safeSheet.textures['{safe} 0.aseprite']
-  const safeHalf = safeSheet.textures['{safe} 1.aseprite']
-  const safeOpen = safeSheet.textures['{safe} 2.aseprite']
+  const safeHalfWithKey = safeSheet.textures['{safe} 1.aseprite']
+  const safeHalfNoKey = safeSheet.textures['{safe} 2.aseprite']
+  const safeOpenWithKey = safeSheet.textures['{safe} 3.aseprite']
+  const safeOpenNoKey = safeSheet.textures['{safe} 4.aseprite']
 
   const safe = new Sprite(safeClosed)
 
@@ -33,62 +38,34 @@ export const createSafePuzzle = async (): Promise<SafePuzzle> => {
   // --- SAFE STATE / CODE LOGIC ---
 
   let safeState: SafeState = 'closed'
-  let isTransitioning = false
+  let keyExists = true
 
-  const SAFE_CODE = '316472' // 6-digit code
-  let isUnlocked = false // becomes true after correct code
+  const getSafeState = () => safeState
+  const hasKey = () => keyExists
 
-  //function to change safe state (animation)
   const setSafeState = (state: SafeState) => {
     safeState = state
+
     if (state === 'closed') safe.texture = safeClosed
-    if (state === 'half') safe.texture = safeHalf
-    if (state === 'open') safe.texture = safeOpen
+    if (state === 'half') safe.texture = keyExists ? safeHalfWithKey : safeHalfNoKey
+    if (state === 'open') safe.texture = keyExists ? safeOpenWithKey : safeOpenNoKey
   }
 
-  // initial value == closed
+  const takeKey = () => {
+    if (safeState !== 'open') return
+    if (!keyExists) return
+
+    keyExists = false
+    setSafeState('open')
+  }
+
   setSafeState('closed')
-
-  //click event to toggle safe state
-  const toggleSafe = () => {
-    if (isTransitioning) return
-    isTransitioning = true
-
-    // if open -> always allowed to close without code
-    if (safeState === 'open') {
-      setSafeState('half')
-      setTimeout(() => {
-        setSafeState('closed')
-        isTransitioning = false
-      }, 150)
-      return
-    }
-
-    // if closed -> require correct code to open
-    if (!isUnlocked) {
-      const inputCode = window.prompt('Enter 6-digit code:') ?? ''
-
-      if (inputCode.length !== 6 || inputCode !== SAFE_CODE) {
-        // wrong code → stay closed
-        isTransitioning = false
-        alert('incorrect code!!!')
-        return
-      }
-
-      // correct code -> safe stays unlocked for future opens
-      isUnlocked = true
-    }
-
-    // now allowed to open
-    setSafeState('half')
-    setTimeout(() => {
-      setSafeState('open')
-      isTransitioning = false
-    }, 150)
-  }
 
   return {
     sprite: safe,
-    toggle: toggleSafe,
+    getSafeState,
+    setSafeState,
+    takeKey,
+    hasKey,
   }
 }

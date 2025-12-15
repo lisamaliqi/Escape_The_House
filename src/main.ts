@@ -8,8 +8,6 @@ import { Room1, type Room1State } from './game/rooms/room1/Room1'
 import { registerRoom2Interactables } from './game/rooms/room2/Interactables'
 import { Room2, type Room2State } from './game/rooms/room2/Room2'
 import { registerRoom3Interactables } from './game/rooms/room3/Interactables'
-// import { registerRoomInteractables } from './game/rooms/room1/Interactables'
-
 import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
 ;(async () => {
@@ -46,6 +44,8 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
     shovelCollected: false,
     plantDig: false,
     key1Collected: false,
+    safeUnlocked: false,
+    blackKeyCollected: false,
   }
 
   const room2State: Room2State = {
@@ -62,7 +62,7 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
   app.stage.addChild(room1.sprite)
 
   //add objects behind character
-  app.stage.addChild(room1.safe)
+  app.stage.addChild(room1.safePuzzle.sprite)
   app.stage.addChild(room1.shovel)
   app.stage.addChild(room1.door)
 
@@ -88,7 +88,7 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
   const useDoor1to2 = () => {
     //remove all room1 sprites
     app.stage.removeChild(room1.sprite)
-    app.stage.removeChild(room1.safe)
+    app.stage.removeChild(room1.safePuzzle.sprite)
     app.stage.removeChild(room1.shovel)
     app.stage.removeChild(room1.door)
     app.stage.removeChild(room1.plant)
@@ -136,7 +136,7 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
     //add room1 sprites
     app.stage.addChild(room1.sprite)
-    app.stage.addChild(room1.safe)
+    app.stage.addChild(room1.safePuzzle.sprite)
     if (!room1State.shovelCollected) app.stage.addChild(room1.shovel)
     app.stage.addChild(room1.door)
 

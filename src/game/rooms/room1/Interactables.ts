@@ -11,18 +11,109 @@ export function registerRoom1Interactables(
   useDoor1to2: () => void,
   state: Room1State
 ) {
-  //register safe as an interactable object
-  interactionSystem.addInteractable({
-    id: 'safe',
-    unlockId: null,
-    getPosition: () => ({
-      x: room1.safe.x,
-      y: room1.safe.y + 40,
-    }),
-    radius: 100,
-    onInteract: room1.toggleSafe,
-    promptText: 'Press E to open',
-  })
+  // --- SAFE ---
+  const removeAllSafeInteractables = () => {
+    interactionSystem.removeInteractable('closed-safe')
+    interactionSystem.removeInteractable('opened-safe-with-key')
+    interactionSystem.removeInteractable('opened-safe')
+  }
+
+  const addClosedSafe = () => {
+    removeAllSafeInteractables()
+    room1.safePuzzle.setSafeState('closed')
+
+    interactionSystem.addInteractable({
+      id: 'closed-safe',
+      unlockId: null,
+      getPosition: () => ({
+        x: room1.safePuzzle.sprite.x,
+        y: room1.safePuzzle.sprite.y + 40,
+      }),
+      radius: 100,
+      promptText: 'Press E to Open safe',
+      onInteract: () => {
+        // first time, write code
+        if (!state.safeUnlocked) {
+          const inputCode = window.prompt('Enter 6-digit code:') ?? ''
+          if (inputCode !== '111111') {
+            alert('incorrect code!!!')
+            return
+          }
+          state.safeUnlocked = true
+        }
+
+        // open with animation
+        room1.safePuzzle.setSafeState('half')
+        setTimeout(() => {
+          room1.safePuzzle.setSafeState('open')
+
+          if (state.blackKeyCollected) {
+            addOpenedSafe()
+          } else {
+            addOpenedSafeWithKey()
+          }
+        }, 150)
+      },
+    })
+  }
+
+  const addOpenedSafeWithKey = () => {
+    removeAllSafeInteractables()
+    room1.safePuzzle.setSafeState('open')
+
+    interactionSystem.addInteractable({
+      id: 'opened-safe-with-key',
+      unlockId: null,
+      getPosition: () => ({
+        x: room1.safePuzzle.sprite.x,
+        y: room1.safePuzzle.sprite.y + 40,
+      }),
+      radius: 100,
+      promptText: 'Press E to Collect key',
+      onInteract: () => {
+        inventory.addItem('blackKey')
+        state.blackKeyCollected = true
+        room1.safePuzzle.takeKey()
+
+        addOpenedSafe()
+      },
+    })
+  }
+
+  const addOpenedSafe = () => {
+    removeAllSafeInteractables()
+    room1.safePuzzle.setSafeState('open')
+
+    interactionSystem.addInteractable({
+      id: 'opened-safe',
+      unlockId: null,
+      getPosition: () => ({
+        x: room1.safePuzzle.sprite.x,
+        y: room1.safePuzzle.sprite.y + 40,
+      }),
+      radius: 100,
+      promptText: 'Press E to Close safe',
+      onInteract: () => {
+        // close with animation
+        room1.safePuzzle.setSafeState('half')
+        setTimeout(() => {
+          room1.safePuzzle.setSafeState('closed')
+          addClosedSafe()
+        }, 150)
+      },
+    })
+  }
+
+  // init safe when going to the room
+  const currentSafeState = room1.safePuzzle.getSafeState()
+
+  if (currentSafeState === 'closed') {
+    addClosedSafe()
+  } else if (currentSafeState === 'open' && !state.blackKeyCollected) {
+    addOpenedSafeWithKey()
+  } else if (currentSafeState === 'open') {
+    addOpenedSafe()
+  }
 
   if (!state.plantDig && !state.key1Collected) {
     interactionSystem.addInteractable({

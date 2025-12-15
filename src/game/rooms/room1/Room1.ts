@@ -6,8 +6,7 @@ import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
 
 export type Room1 = {
   sprite: Sprite
-  safe: Sprite
-  toggleSafe: () => void
+  safePuzzle: SafePuzzle
   plant: Sprite
   dig: () => void
   door: Sprite
@@ -21,6 +20,8 @@ export type Room1State = {
   shovelCollected: boolean
   plantDig: boolean
   key1Collected: boolean
+  safeUnlocked: boolean
+  blackKeyCollected: boolean
 }
 
 // draw mask image to canvas and get pixel data
@@ -70,7 +71,7 @@ export const Room1 = async (app: Application): Promise<Room1> => {
 
   // create safe puzzle
   const safePuzzle: SafePuzzle = await createSafePuzzle()
-  const safe = safePuzzle.sprite //safe sprite
+  // const safe = safePuzzle.sprite //safe sprite
 
   //create plant puzzle
   const plantPuzzle: PlantPuzzle = await createPlantPuzzle()
@@ -106,8 +107,7 @@ export const Room1 = async (app: Application): Promise<Room1> => {
 
   return {
     sprite: room,
-    safe,
-    toggleSafe: safePuzzle.toggle,
+    safePuzzle,
     plant,
     dig: plantPuzzle.dig,
     door,
