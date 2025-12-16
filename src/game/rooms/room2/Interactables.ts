@@ -257,4 +257,56 @@ export function registerRoom2Interactables(
       },
     })
   }
+
+  //---OUTSIDE DOOR---
+  if (!state.outsideDoorOpened) {
+    //if door is closed
+    interactionSystem.addInteractable({
+      id: 'outsideDoor-closed',
+      unlockId: 'blackKey',
+      getPosition: () => ({
+        x: room2.outsideDoor.x,
+        y: room2.outsideDoor.y + 40,
+      }),
+      radius: 40,
+      promptText: 'Press E to open the door',
+      lockedText: 'You need a key to open the door',
+      onInteract: () => {
+        room2.openOutsideDoor()
+        state.outsideDoorOpened = true
+        interactionSystem.removeInteractable('outsideDoor-closed')
+
+        interactionSystem.addInteractable({
+          id: 'outsideDoor-opened',
+          unlockId: null,
+          getPosition: () => ({
+            x: room2.outsideDoor.x,
+            y: room2.outsideDoor.y + 40,
+          }),
+          radius: 40,
+          promptText: 'Press E to leave house',
+          onInteract: () => {
+            interactionSystem.removeInteractable('outsideDoor-opened')
+            console.log('leaving the house...')
+          },
+        })
+      },
+    })
+  } else {
+    //door already open, stays open even when changing rooms
+    interactionSystem.addInteractable({
+      id: 'outsideDoor-opened',
+      unlockId: null,
+      getPosition: () => ({
+        x: room2.outsideDoor.x,
+        y: room2.outsideDoor.y + 40,
+      }),
+      radius: 40,
+      promptText: 'Press E to leave house',
+      onInteract: () => {
+        interactionSystem.removeInteractable('outsideDoor-opened')
+        console.log('leaving the house...')
+      },
+    })
+  }
 }
