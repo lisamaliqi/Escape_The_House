@@ -2,6 +2,7 @@ import { Assets, Sprite, type Application } from 'pixi.js'
 import { createDoor2to1, type Door2to1 } from './door2-1'
 import { createDoor2to3, type Door2to3 } from './door2-3'
 import { createDrawerPuzzle, type DrawerPuzzle } from './drawerPuzzle'
+import { createOutsideDoor, type OutsideDoor } from './outsideDoor'
 import { createPaintingPuzzle, type PaintingPuzzle } from './paintingPuzzle'
 
 export type Room2 = {
@@ -9,6 +10,8 @@ export type Room2 = {
   door: Sprite
   door2: Sprite
   openDoor2: () => void
+  outsideDoor: Sprite
+  openOutsideDoor: () => void
   drawer: DrawerPuzzle
   painting: PaintingPuzzle
   isWalkable: (worldX: number, worldY: number) => boolean
@@ -18,6 +21,7 @@ export type Room2State = {
   noteInDrawerCollected: boolean
   colorWheelCollected: boolean
   door2to3Opened: boolean
+  outsideDoorOpened: boolean
 }
 
 //load mask to canvas
@@ -62,6 +66,9 @@ export const Room2 = async (app: Application): Promise<Room2> => {
   const door2to3: Door2to3 = await createDoor2to3()
   const door2 = door2to3.sprite
 
+  const buildOutsideDoor: OutsideDoor = await createOutsideDoor()
+  const outsideDoor = buildOutsideDoor.sprite
+
   const drawerPuzzle: DrawerPuzzle = await createDrawerPuzzle()
   //   const drawer = drawerPuzzle.sprite
 
@@ -91,6 +98,8 @@ export const Room2 = async (app: Application): Promise<Room2> => {
     door,
     door2,
     openDoor2: door2to3.openDoor,
+    outsideDoor,
+    openOutsideDoor: buildOutsideDoor.openDoor,
     drawer: drawerPuzzle,
     painting: paintingPuzzle,
     isWalkable,

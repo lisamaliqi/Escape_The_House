@@ -52,6 +52,7 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
     noteInDrawerCollected: false,
     colorWheelCollected: false,
     door2to3Opened: false,
+    outsideDoorOpened: false,
   }
 
   const room3State: Room3State = {
@@ -103,6 +104,8 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
     //add character
     app.stage.addChild(character.sprite)
     character.setRoom(room2)
+
+    app.stage.addChild(room2.outsideDoor)
 
     //push prompt to the front
     interactionSystem.bringPromptToFront()
@@ -208,6 +211,8 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
     app.stage.addChild(character.sprite)
     character.setRoom(room2)
+
+    app.stage.addChild(room2.outsideDoor)
 
     //push prompt to the front
     interactionSystem.bringPromptToFront()
