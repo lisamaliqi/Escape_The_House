@@ -4,11 +4,12 @@ import type { Room } from '../rooms/roomTypes'
 
 export class Character {
   sprite: Container
-  speed = 6
+  speed = 3
   private room: Room
 
   private idleSprite!: Sprite
   private downAnim!: AnimatedSprite
+  private upAnim!: AnimatedSprite
   private isReady = false
 
   /**
@@ -43,13 +44,14 @@ export class Character {
     this.idleSprite = new Sprite(idleTex)
     this.idleSprite.anchor.set(0.5)
 
-    // Down spritesheet (3 frames)
-    const sheet = await Assets.load<any>('character/characterDown/characterDown.json')
+    // DOWN animation
+    const downSheet = await Assets.load<any>('character/characterDown/characterDown.json')
 
     const downFrames: Texture[] = [
-      sheet.textures['{characterDown} 0.aseprite'],
-      sheet.textures['{characterDown} 1.aseprite'],
-      sheet.textures['{characterDown} 2.aseprite'],
+      downSheet.textures['{characterDown} 0.aseprite'],
+      downSheet.textures['{characterDown} 1.aseprite'],
+      downSheet.textures['{characterDown} 2.aseprite'],
+      downSheet.textures['{characterDown} 3.aseprite'],
     ]
 
     this.downAnim = new AnimatedSprite(downFrames)
@@ -58,8 +60,24 @@ export class Character {
     this.downAnim.loop = true
     this.downAnim.visible = false
 
+    // --- UP animation ---
+    const upSheet = await Assets.load<any>('character/characterUp/characterUp.json')
+
+    const upFrames: Texture[] = [
+      upSheet.textures['{characterUp} 0.aseprite'],
+      upSheet.textures['{characterUp} 1.aseprite'],
+      upSheet.textures['{characterUp} 2.aseprite'],
+      upSheet.textures['{characterUp} 3.aseprite'],
+    ]
+
+    this.upAnim = new AnimatedSprite(upFrames)
+    this.upAnim.anchor.set(0.5)
+    this.upAnim.animationSpeed = 0.15
+    this.upAnim.loop = true
+    this.upAnim.visible = false
+
     // add textures and animations to container
-    this.sprite.addChild(this.idleSprite, this.downAnim)
+    this.sprite.addChild(this.idleSprite, this.downAnim, this.upAnim)
 
     this.isReady = true
   }
@@ -110,11 +128,24 @@ export class Character {
     if (isMoving && input.down) {
       // DOWN ANIMATION
       this.idleSprite.visible = false
+      this.upAnim.visible = false
+
       this.downAnim.visible = true
+
       if (!this.downAnim.playing) this.downAnim.play()
+    } else if (isMoving && input.up) {
+      // UP ANIMATION
+      this.idleSprite.visible = false
+      this.downAnim.visible = false
+
+      this.upAnim.visible = true
+
+      if (!this.upAnim.playing) this.upAnim.play()
     } else {
       // IDLE (still) PNG
       this.downAnim.visible = false
+      this.upAnim.visible = false
+
       this.idleSprite.visible = true
       if (this.downAnim.playing) this.downAnim.stop()
     }
