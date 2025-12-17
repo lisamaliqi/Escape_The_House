@@ -11,7 +11,64 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
 import { registerRoom3Interactables } from './game/rooms/room3/Interactables'
 import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
-;(async () => {
+const STORY_MS = 7500
+
+const createStartScreen = (onStart: () => void) => {
+  const wrapper = document.createElement('div')
+  wrapper.id = 'start-screen'
+
+  wrapper.innerHTML = `
+    <div class="start-box">
+      <h1>Escape the House</h1>
+
+      <div class="instructions">
+        <p><strong>How to play</strong></p>
+        <p>W A S D or ↑ ↓ ← → ––– Walk</p>
+        <p>E ––– Interact</p>
+        <p>Klick on Inventory item to make it bigger</p>
+      </div>
+
+      <button id="start-btn">Start game</button>
+    </div>
+  `
+
+  const button = wrapper.querySelector('#start-btn') as HTMLButtonElement
+
+  button.onclick = () => {
+    wrapper.remove()
+    onStart()
+  }
+
+  document.body.appendChild(wrapper)
+}
+
+const createStoryScreen = (ms: number, onDone: () => void) => {
+  const wrapper = document.createElement('div')
+  wrapper.id = 'story-screen'
+
+  wrapper.innerHTML = `
+    <div class="story-box">
+      <h1>Escape the House</h1>
+      <p>You woke up alone. You need to get out. Something is wrong...</p>
+      <p><em>Find the clues and GET OUT.</em></p>
+    </div>
+  `
+
+  document.body.appendChild(wrapper)
+
+  window.setTimeout(() => {
+    wrapper.remove()
+    onDone()
+  }, ms)
+}
+
+createStartScreen(() => {
+  createStoryScreen(STORY_MS, () => {
+    startGame()
+  })
+})
+
+const startGame = async () => {
   //create wrapper for game
   const wrapper = document.createElement('div')
   wrapper.id = 'game-wrapper'
@@ -253,4 +310,4 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
   }
 
   registerRoom1Interactables(interactionSystem, room1, inventory, app, useDoor1to2, room1State)
-})()
+}
