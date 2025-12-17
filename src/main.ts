@@ -11,6 +11,10 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
 import { registerRoom3Interactables } from './game/rooms/room3/Interactables'
 import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
+let appRef: Application | null = null
+let gameWrapperRef: HTMLDivElement | null = null
+
+let soundEnabled = true
 let bgMusic: HTMLAudioElement | null = null
 
 const playBackgroundMusic = () => {
@@ -19,7 +23,20 @@ const playBackgroundMusic = () => {
   bgMusic = new Audio('/audio/backgroundMusic.mp3')
   bgMusic.loop = true
   bgMusic.volume = 0.4
-  bgMusic.play()
+
+  if (soundEnabled) bgMusic.play()
+}
+
+const setSoundEnabled = (enabled: boolean) => {
+  soundEnabled = enabled
+
+  if (!bgMusic) return
+
+  if (soundEnabled) {
+    bgMusic.play()
+  } else {
+    bgMusic.pause()
+  }
 }
 
 const stopBackgroundMusic = () => {
@@ -27,7 +44,7 @@ const stopBackgroundMusic = () => {
   bgMusic = null
 }
 
-const STORY_MS = 7500
+const STORY_MS = 1000
 
 const createStartScreen = (onStart: () => void) => {
   const wrapper = document.createElement('div')
@@ -86,11 +103,122 @@ createStartScreen(() => {
   })
 })
 
+const quitGame = () => {
+  bgMusic?.pause()
+  bgMusic = null
+
+  appRef?.destroy(true)
+  appRef = null
+
+  gameWrapperRef?.remove()
+  gameWrapperRef = null
+
+  createStartScreen(() => {
+    createStoryScreen(STORY_MS, () => {
+      playBackgroundMusic()
+      startGame()
+    })
+  })
+}
+
+const createSettingsUI = (parent: HTMLElement) => {
+  // Settings-button
+  const btn = document.createElement('button')
+  btn.id = 'settings-btn'
+  btn.textContent = 'Settings'
+
+  // Modal
+  const modal = document.createElement('div')
+  modal.id = 'settings-modal'
+  modal.classList.add('hidden')
+
+  const howToPlayHtml = `
+    <p>W A S D or ↑ ↓ ← → ––– Walk</p>
+    <p>E ––– Interact</p>
+    <p>Click on inventory item to make it bigger</p>
+  `
+
+  modal.innerHTML = `
+  <div class="settings-box">
+    <div class="settings-header">
+      <h2>Settings</h2>
+      <button id="settings-close-x" aria-label="Close">✕</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <p class="settings-label">Sound</p>
+          <p class="settings-sub">Music & effects</p>
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="sound-toggle" />
+          <span class="toggle-track" aria-hidden="true"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <button id="how-to-play-btn" class="btn btn-secondary">How to play</button>
+
+      <div id="how-to-play-panel" class="howto hidden">
+        ${howToPlayHtml}
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <button id="quit-btn" class="btn btn-danger">Quit game</button>
+    </div>
+  </div>
+`
+
+  parent.appendChild(btn)
+  parent.appendChild(modal)
+
+  const soundToggle = modal.querySelector('#sound-toggle') as HTMLInputElement
+  const howToPlayBtn = modal.querySelector('#how-to-play-btn') as HTMLButtonElement
+  const quitBtn = modal.querySelector('#quit-btn') as HTMLButtonElement
+  const closeBtn = modal.querySelector('#settings-close-x') as HTMLButtonElement
+  const howPanel = modal.querySelector('#how-to-play-panel') as HTMLDivElement
+
+  // init state
+  soundToggle.checked = soundEnabled
+
+  const open = () => modal.classList.remove('hidden')
+  const close = () => {
+    modal.classList.add('hidden')
+    howPanel.classList.add('hidden')
+  }
+
+  btn.onclick = open
+  closeBtn.onclick = close
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close()
+  })
+
+  soundToggle.onchange = () => setSoundEnabled(soundToggle.checked)
+
+  howToPlayBtn.onclick = () => {
+    howPanel.classList.toggle('hidden')
+  }
+
+  quitBtn.onclick = () => {
+    modal.classList.add('hidden')
+    quitGame()
+  }
+}
+
 const startGame = async () => {
   //create wrapper for game
   const wrapper = document.createElement('div')
   wrapper.id = 'game-wrapper'
   document.body.appendChild(wrapper)
+
+  gameWrapperRef = wrapper
+
+  createSettingsUI(wrapper)
 
   const winScreen = document.getElementById('win-screen') as HTMLDivElement
   const playAgainBtn = document.getElementById('play-again') as HTMLButtonElement
@@ -112,6 +240,7 @@ const startGame = async () => {
     width: 1200, //choose width and hight of canvas
     height: 700,
   })
+  appRef = app
 
   //put canvas on the page
   wrapper.appendChild(app.canvas)
