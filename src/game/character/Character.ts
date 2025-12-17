@@ -10,6 +10,8 @@ export class Character {
   private idleSprite!: Sprite
   private downAnim!: AnimatedSprite
   private upAnim!: AnimatedSprite
+  private leftAnim!: AnimatedSprite
+  private rightAnim!: AnimatedSprite
   private isReady = false
 
   /**
@@ -76,8 +78,40 @@ export class Character {
     this.upAnim.loop = true
     this.upAnim.visible = false
 
+    // --- LEFT animation ---
+    const leftSheet = await Assets.load<any>('character/characterLeft/characterLeft.json')
+
+    const leftFrames: Texture[] = [
+      leftSheet.textures['{characterLeft} 0.aseprite'],
+      leftSheet.textures['{characterLeft} 1.aseprite'],
+      leftSheet.textures['{characterLeft} 2.aseprite'],
+      leftSheet.textures['{characterLeft} 3.aseprite'],
+    ]
+
+    this.leftAnim = new AnimatedSprite(leftFrames)
+    this.leftAnim.anchor.set(0.5)
+    this.leftAnim.animationSpeed = 0.15
+    this.leftAnim.loop = true
+    this.leftAnim.visible = false
+
+    // --- RIGHT animation ---
+    const rightSheet = await Assets.load<any>('character/characterRight/characterRight.json')
+
+    const rightFrames: Texture[] = [
+      rightSheet.textures['{characterRight} 0.aseprite'],
+      rightSheet.textures['{characterRight} 1.aseprite'],
+      rightSheet.textures['{characterRight} 2.aseprite'],
+      rightSheet.textures['{characterRight} 3.aseprite'],
+    ]
+
+    this.rightAnim = new AnimatedSprite(rightFrames)
+    this.rightAnim.anchor.set(0.5)
+    this.rightAnim.animationSpeed = 0.15
+    this.rightAnim.loop = true
+    this.rightAnim.visible = false
+
     // add textures and animations to container
-    this.sprite.addChild(this.idleSprite, this.downAnim, this.upAnim)
+    this.sprite.addChild(this.idleSprite, this.downAnim, this.upAnim, this.leftAnim, this.rightAnim)
 
     this.isReady = true
   }
@@ -124,29 +158,44 @@ export class Character {
       this.sprite.y = y
     }
 
+    const resetVisibilityAnimation = () => {
+      this.idleSprite.visible = false
+      this.upAnim.visible = false
+      this.downAnim.visible = false
+      this.leftAnim.visible = false
+      this.rightAnim.visible = false
+    }
+
     // --- VISUAL STATE ---
     if (isMoving && input.down) {
       // DOWN ANIMATION
-      this.idleSprite.visible = false
-      this.upAnim.visible = false
-
+      resetVisibilityAnimation()
       this.downAnim.visible = true
 
       if (!this.downAnim.playing) this.downAnim.play()
     } else if (isMoving && input.up) {
       // UP ANIMATION
-      this.idleSprite.visible = false
-      this.downAnim.visible = false
-
+      resetVisibilityAnimation()
       this.upAnim.visible = true
 
       if (!this.upAnim.playing) this.upAnim.play()
+    } else if (isMoving && input.left) {
+      // LEFT ANIMATION´
+      resetVisibilityAnimation()
+      this.leftAnim.visible = true
+
+      if (!this.leftAnim.playing) this.leftAnim.play()
+    } else if (isMoving && input.right) {
+      // RIGHT ANIMATION
+      resetVisibilityAnimation()
+      this.rightAnim.visible = true
+
+      if (!this.rightAnim.playing) this.rightAnim.play()
     } else {
       // IDLE (still) PNG
-      this.downAnim.visible = false
-      this.upAnim.visible = false
-
+      resetVisibilityAnimation()
       this.idleSprite.visible = true
+
       if (this.downAnim.playing) this.downAnim.stop()
     }
   }

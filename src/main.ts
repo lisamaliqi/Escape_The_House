@@ -171,6 +171,7 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
     app.stage.removeChild(room2.drawer.sprite)
     app.stage.removeChild(room2.drawer.sprite)
     app.stage.removeChild(room2.painting.sprite)
+    app.stage.removeChild(room2.outsideDoor)
 
     //add room3 sprites
     app.stage.addChild(room3.sprite)
