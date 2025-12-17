@@ -8,7 +8,8 @@ export function registerRoom2Interactables(
   inventory: Inventory,
   useDoor2to1: () => void,
   useDoor2to3: () => void,
-  state: Room2State
+  state: Room2State,
+  showWinScreen: () => void
 ) {
   interactionSystem.addInteractable({
     id: 'door2to1-enter',
@@ -288,6 +289,7 @@ export function registerRoom2Interactables(
           onInteract: () => {
             interactionSystem.removeInteractable('outsideDoor-opened')
             console.log('leaving the house...')
+            showWinScreen()
           },
         })
       },
@@ -306,6 +308,7 @@ export function registerRoom2Interactables(
       onInteract: () => {
         interactionSystem.removeInteractable('outsideDoor-opened')
         console.log('leaving the house...')
+        showWinScreen()
       },
     })
   }

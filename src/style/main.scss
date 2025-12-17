@@ -72,3 +72,22 @@ canvas {
   color: #fff;
   cursor: pointer;
 }
+
+#win-screen {
+  position: fixed;
+  inset: 0;
+  place-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  text-align: center;
+  z-index: 9999;
+}
+
+#win-screen.hidden {
+  display: none;
+}
+
+#win-screen:not(.hidden) {
+  display: grid;
+}

@@ -1,3 +1,4 @@
+import './style/main.scss'
 import { Application } from 'pixi.js'
 import { Character } from './game/character/Character'
 import { Input } from './game/engine/Input'
@@ -15,6 +16,19 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
   const wrapper = document.createElement('div')
   wrapper.id = 'game-wrapper'
   document.body.appendChild(wrapper)
+
+  const winScreen = document.getElementById('win-screen') as HTMLDivElement
+  const playAgainBtn = document.getElementById('play-again') as HTMLButtonElement
+
+  const showWinScreen = () => {
+    wrapper.classList.add('hidden')
+    winScreen.style.display = ''
+    winScreen.classList.remove('hidden')
+  }
+
+  playAgainBtn.addEventListener('click', () => {
+    window.location.reload()
+  })
 
   //initialize app
   const app = new Application()
@@ -120,7 +134,8 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
       inventory,
       useDoor2to1,
       useDoor2to3,
-      room2State
+      room2State,
+      showWinScreen
     )
 
     //position character by the door
@@ -228,7 +243,8 @@ import { Room3, type Room3State } from './game/rooms/room3/Room3'
       inventory,
       useDoor2to1,
       useDoor2to3,
-      room2State
+      room2State,
+      showWinScreen
     )
 
     //position character by the door

@@ -4,7 +4,7 @@ import type { Room } from '../rooms/roomTypes'
 
 export class Character {
   sprite: Container
-  speed = 3
+  speed = 6
   private room: Room
 
   private idleSprite!: Sprite
