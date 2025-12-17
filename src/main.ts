@@ -125,7 +125,6 @@ const createSettingsUI = (parent: HTMLElement) => {
   // Settings-button
   const btn = document.createElement('button')
   btn.id = 'settings-btn'
-  btn.textContent = 'Settings'
 
   // Modal
   const modal = document.createElement('div')
