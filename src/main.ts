@@ -11,6 +11,22 @@ import { Room2, type Room2State } from './game/rooms/room2/Room2'
 import { registerRoom3Interactables } from './game/rooms/room3/Interactables'
 import { Room3, type Room3State } from './game/rooms/room3/Room3'
 
+let bgMusic: HTMLAudioElement | null = null
+
+const playBackgroundMusic = () => {
+  if (bgMusic) return
+
+  bgMusic = new Audio('/audio/backgroundMusic.mp3')
+  bgMusic.loop = true
+  bgMusic.volume = 0.4
+  bgMusic.play()
+}
+
+const stopBackgroundMusic = () => {
+  bgMusic?.pause()
+  bgMusic = null
+}
+
 const STORY_MS = 7500
 
 const createStartScreen = (onStart: () => void) => {
@@ -63,6 +79,8 @@ const createStoryScreen = (ms: number, onDone: () => void) => {
 }
 
 createStartScreen(() => {
+  playBackgroundMusic()
+
   createStoryScreen(STORY_MS, () => {
     startGame()
   })
@@ -81,6 +99,7 @@ const startGame = async () => {
     wrapper.classList.add('hidden')
     winScreen.style.display = ''
     winScreen.classList.remove('hidden')
+    stopBackgroundMusic()
   }
 
   playAgainBtn.addEventListener('click', () => {
