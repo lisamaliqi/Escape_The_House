@@ -1,8 +1,8 @@
 import { Assets, Sprite, type Application } from 'pixi.js'
 import { createDoor1to2, type Door1to2 } from './door1-2'
 import { room1Objects } from './objects'
+import { createSafePuzzle, type SafePuzzle } from './objects/safe'
 import { createPlantPuzzle, type PlantPuzzle } from './plantPuzzle'
-import { createSafePuzzle, type SafePuzzle } from './safePuzzle'
 
 export type Room1 = {
   sprite: Sprite

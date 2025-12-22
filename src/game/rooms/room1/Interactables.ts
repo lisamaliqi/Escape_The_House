@@ -1,8 +1,8 @@
 import type { Application } from 'pixi.js'
 import type { InteractionSystem } from '../../engine/InteractionSystem'
 import type { Inventory } from '../../engine/Inventory'
+import { openCodeModal } from '../../ui/codeModal'
 import type { Room1, Room1State } from './Room1'
-import { openCodeModal } from './safePuzzle'
 
 export function registerRoom1Interactables(
   interactionSystem: InteractionSystem,
@@ -36,16 +36,10 @@ export function registerRoom1Interactables(
         // first time, write code
         if (!state.safeUnlocked) {
           const inputCode = await openCodeModal({
-            title: 'Safe code',
-            subtitle: 'Enter the 6-digit code',
             validate: (code) => code === '111111',
-            successText: 'Unlocked!',
-            errorText: 'Incorrect code',
           })
 
           if (inputCode === null) return
-          state.safeUnlocked = true
-
           state.safeUnlocked = true
         }
 

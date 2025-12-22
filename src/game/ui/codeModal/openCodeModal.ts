@@ -1,33 +1,20 @@
-import { Assets, Sprite } from 'pixi.js'
+import type { CodeModalOptions } from './types'
 
-export type SafeState = 'closed' | 'half' | 'open'
-
-export type SafePuzzle = {
-  sprite: Sprite
-  getSafeState: () => SafeState
-  setSafeState: (state: SafeState) => void
-  takeKey: () => void
-  hasKey: () => boolean
-}
-
-type CodeModalOptions = {
-  title?: string
-  subtitle?: string
-  validate?: (code: string) => boolean | Promise<boolean>
-  successText?: string
-  errorText?: string
-}
-
+/**
+ * Opens a modal dialog to input a 6-digit code.
+ */
 export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> => {
   return new Promise((resolve) => {
+    //create modal overlay and give class name with styling
     const overlay = document.createElement('div')
     overlay.className = 'modal-overlay'
 
+    //HTML structure for the modal
     overlay.innerHTML = `
       <div class="modal">
         <button class="modal-close" aria-label="Close">✕</button>
-        <h2 class="modal-title">${opts?.title ?? 'Enter code'}</h2>
-        <p class="modal-subtitle">${opts?.subtitle ?? 'Type 6 digits'}</p>
+        <h2 class="modal-title">'Safe code'</h2>
+        <p class="modal-subtitle">'Enter the 6-digit code'}</p>
 
         <div class="code-slots" aria-label="6 digit code">
           ${Array.from({ length: 6 })
@@ -44,6 +31,7 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
       </div>
     `
 
+    //append it to the body
     document.body.appendChild(overlay)
 
     const modal = overlay.querySelector<HTMLDivElement>('.modal')!
@@ -56,6 +44,7 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
     let digits: string[] = []
     let busy = false
 
+    //sets the busy state of the modal (disables buttons and input)
     const setBusy = (value: boolean) => {
       busy = value
       okBtn.disabled = value || digits.length !== 6
@@ -63,6 +52,7 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
       closeBtn.disabled = value
     }
 
+    //sets feedback message and style (error or success or none for the code)
     const setFeedback = (type: 'none' | 'error' | 'success', text = '') => {
       feedback.textContent = text
       feedback.classList.remove('error', 'success')
@@ -70,29 +60,36 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
       if (type === 'success') feedback.classList.add('success')
     }
 
+    //if error, it shakes the modal (css animation)
     const shake = () => {
       modal.classList.remove('shake')
       void modal.offsetWidth
       modal.classList.add('shake')
     }
 
+    //render current digits in the slots, UI update
     const render = () => {
-      for (let i = 0; i < 6; i++) slots[i].textContent = digits[i] ?? '-'
+      for (let i = 0; i < 6; i++) {
+        slots[i].textContent = digits[i] ?? '-'
+      }
+
       if (!busy) okBtn.disabled = digits.length !== 6
     }
 
+    //cleanup modal and resolve promise
     const cleanup = (value: string | null) => {
       window.removeEventListener('keydown', onKeyDown)
       overlay.remove()
       resolve(value)
     }
 
+    //handles keydown events for input
     const onKeyDown = (e: KeyboardEvent) => {
       if (busy) return
-
-      if (e.key === 'Escape') return cleanup(null)
+      if (e.key === 'Escape') return cleanup(null) // close on escape
 
       if (e.key === 'Backspace') {
+        // remove last digit
         digits = digits.slice(0, -1)
         setFeedback('none')
         render()
@@ -100,15 +97,16 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
       }
 
       if (/^\d$/.test(e.key)) {
+        // add digit if it's a number
         if (digits.length < 6) {
           digits.push(e.key)
           setFeedback('none')
           render()
         }
-        return
       }
     }
 
+    //tries to submit the code for validation
     const trySubmit = async () => {
       if (busy) return
       if (digits.length !== 6) return
@@ -122,8 +120,9 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
 
       const isValid = await opts.validate(code)
 
+      //not correct code
       if (!isValid) {
-        setFeedback('error', opts.errorText ?? 'Wrong code. Try again.')
+        setFeedback('error', 'Wrong code. Try again.')
         shake()
         digits = []
         render()
@@ -131,80 +130,21 @@ export const openCodeModal = (opts?: CodeModalOptions): Promise<string | null> =
         return
       }
 
-      setFeedback('success', opts.successText ?? 'Unlocked!')
+      //correct code
+      setFeedback('success', 'Unlocked!')
       setTimeout(() => cleanup(code), 450)
     }
 
+    //click outside modal = close modal
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay && !busy) cleanup(null)
     })
 
-    cancelBtn.addEventListener('click', () => !busy && cleanup(null))
-    closeBtn.addEventListener('click', () => !busy && cleanup(null))
-    okBtn.addEventListener('click', () => void trySubmit())
+    cancelBtn.addEventListener('click', () => !busy && cleanup(null)) //close
+    closeBtn.addEventListener('click', () => !busy && cleanup(null)) //close
+    okBtn.addEventListener('click', () => void trySubmit()) //submit
 
     window.addEventListener('keydown', onKeyDown)
-
     render()
   })
-}
-
-/**
- * Creates the safe puzzle:
- * - loads spritesheet
- * - handles open/close animation
- * - checks 6-digit code on open
- * - makes the sprite clickable (will remove later)
- */
-export const createSafePuzzle = async (): Promise<SafePuzzle> => {
-  //load spritesheet (animation) for safe object
-  const safeSheet = await Assets.load('/room1/objects/safe/safe.json')
-
-  const safeClosed = safeSheet.textures['{safe} 0.aseprite']
-  const safeHalfWithKey = safeSheet.textures['{safe} 1.aseprite']
-  const safeHalfNoKey = safeSheet.textures['{safe} 2.aseprite']
-  const safeOpenWithKey = safeSheet.textures['{safe} 3.aseprite']
-  const safeOpenNoKey = safeSheet.textures['{safe} 4.aseprite']
-
-  const safe = new Sprite(safeClosed)
-
-  //position the safe correctly in the room
-  safe.anchor.set(0.5)
-  safe.x = 190
-  safe.y = 290
-  safe.scale.set(2)
-
-  // --- SAFE STATE / CODE LOGIC ---
-
-  let safeState: SafeState = 'closed'
-  let keyExists = true
-
-  const getSafeState = () => safeState
-  const hasKey = () => keyExists
-
-  const setSafeState = (state: SafeState) => {
-    safeState = state
-
-    if (state === 'closed') safe.texture = safeClosed
-    if (state === 'half') safe.texture = keyExists ? safeHalfWithKey : safeHalfNoKey
-    if (state === 'open') safe.texture = keyExists ? safeOpenWithKey : safeOpenNoKey
-  }
-
-  const takeKey = () => {
-    if (safeState !== 'open') return
-    if (!keyExists) return
-
-    keyExists = false
-    setSafeState('open')
-  }
-
-  setSafeState('closed')
-
-  return {
-    sprite: safe,
-    getSafeState,
-    setSafeState,
-    takeKey,
-    hasKey,
-  }
 }
