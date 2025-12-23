@@ -25,6 +25,7 @@ export function registerRoom3Interactables(
   })
 
   // --- SINK CABINET ---
+  let sinkCabinetModalOpen = false
 
   const removeAllSinkCabinetInteractables = () => {
     interactionSystem.removeInteractable('sink-cabinet-closed')
@@ -48,19 +49,26 @@ export function registerRoom3Interactables(
         ? 'Press E to Open cabinet'
         : 'Press E to Unlock cabinet',
       onInteract: async () => {
-        if (state.noteInCabinetCollected) {
+        if (sinkCabinetModalOpen) return
+
+        sinkCabinetModalOpen = true
+        try {
+          if (state.noteInCabinetCollected) {
+            removeAllSinkCabinetInteractables()
+            if (state.noteInCabinetCollected) addSinkCabinetOpened()
+            else addSinkCabinetOpenedWithNote()
+            return
+          }
+
+          const unlocked = await room3.sinkCabinetPuzzle.openLock()
+
+          if (!unlocked) return
+
           removeAllSinkCabinetInteractables()
-          if (state.noteInCabinetCollected) addSinkCabinetOpened()
-          else addSinkCabinetOpenedWithNote()
-          return
+          addSinkCabinetOpenedWithNote()
+        } finally {
+          sinkCabinetModalOpen = false
         }
-
-        const unlocked = await room3.sinkCabinetPuzzle.openLock()
-
-        if (!unlocked) return
-
-        removeAllSinkCabinetInteractables()
-        addSinkCabinetOpenedWithNote()
       },
     })
   }

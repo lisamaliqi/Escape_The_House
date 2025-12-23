@@ -13,6 +13,8 @@ export function registerRoom1Interactables(
   state: Room1State
 ) {
   // --- SAFE ---
+  let safeModalOpen = false
+
   const removeAllSafeInteractables = () => {
     interactionSystem.removeInteractable('closed-safe')
     interactionSystem.removeInteractable('opened-safe-with-key')
@@ -33,27 +35,34 @@ export function registerRoom1Interactables(
       radius: 100,
       promptText: 'Press E to Open safe',
       onInteract: async () => {
-        // first time, write code
-        if (!state.safeUnlocked) {
-          const inputCode = await openCodeModal({
-            validate: (code) => code === '316472',
-          })
+        if (safeModalOpen) return //block spam for more modals
 
-          if (inputCode === null) return
-          state.safeUnlocked = true
-        }
+        safeModalOpen = true
+        try {
+          // first time, write code
+          if (!state.safeUnlocked) {
+            const inputCode = await openCodeModal({
+              validate: (code) => code === '316472',
+            })
 
-        // open with animation
-        room1.safePuzzle.setSafeState('half')
-        setTimeout(() => {
-          room1.safePuzzle.setSafeState('open')
-
-          if (state.blackKeyCollected) {
-            addOpenedSafe()
-          } else {
-            addOpenedSafeWithKey()
+            if (inputCode === null) return
+            state.safeUnlocked = true
           }
-        }, 150)
+
+          // open with animation
+          room1.safePuzzle.setSafeState('half')
+          setTimeout(() => {
+            room1.safePuzzle.setSafeState('open')
+
+            if (state.blackKeyCollected) {
+              addOpenedSafe()
+            } else {
+              addOpenedSafeWithKey()
+            }
+          }, 150)
+        } finally {
+          safeModalOpen = false //remove block when modal is closed
+        }
       },
     })
   }

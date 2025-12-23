@@ -1,5 +1,6 @@
 import './style/main.scss'
 import { Application } from 'pixi.js'
+import { preloadAssets } from './Assets'
 import { Character } from './game/character/Character'
 import { Input } from './game/engine/Input'
 import { InteractionSystem } from './game/engine/InteractionSystem'
@@ -58,7 +59,7 @@ const createStartScreen = (onStart: () => void) => {
         <p><strong>How to play</strong></p>
         <p>W A S D or ↑ ↓ ← → ––– Walk</p>
         <p>E ––– Interact</p>
-        <p>Klick on Inventory item to make it bigger</p>
+        <p>Click on Inventory item to make it bigger</p>
       </div>
 
       <button id="start-btn">Start game</button>
@@ -75,7 +76,9 @@ const createStartScreen = (onStart: () => void) => {
   document.body.appendChild(wrapper)
 }
 
-const createStoryScreen = (ms: number, onDone: () => void) => {
+const createStoryScreen = async (ms: number, onDone: () => void) => {
+  await preloadAssets()
+
   const wrapper = document.createElement('div')
   wrapper.id = 'story-screen'
 
