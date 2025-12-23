@@ -36,7 +36,7 @@ export function registerRoom1Interactables(
         // first time, write code
         if (!state.safeUnlocked) {
           const inputCode = await openCodeModal({
-            validate: (code) => code === '111111',
+            validate: (code) => code === '316472',
           })
 
           if (inputCode === null) return

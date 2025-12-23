@@ -44,7 +44,7 @@ const stopBackgroundMusic = () => {
   bgMusic = null
 }
 
-const STORY_MS = 1000
+const STORY_MS = 6500
 
 const createStartScreen = (onStart: () => void) => {
   const wrapper = document.createElement('div')

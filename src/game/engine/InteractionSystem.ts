@@ -1,4 +1,4 @@
-import { Application, Container, Text } from 'pixi.js'
+import { Application, Container, Graphics, Text } from 'pixi.js'
 import type { Input } from './Input'
 import type { Inventory } from './Inventory'
 
@@ -31,6 +31,7 @@ export class InteractionSystem {
   private interactables: Interactable[] = [] //list of interactable objects
   private current: Interactable | null = null //current active interactable object
   private promptContainer: Container
+  private promptBg: Graphics
   private promptTextObject: Text
   private prevInteract = false
 
@@ -46,6 +47,8 @@ export class InteractionSystem {
     this.getCharacterFeet = getCharacterFeet
     this.inventory = inventory
     this.promptContainer = new Container()
+    this.promptBg = new Graphics()
+    this.promptContainer.addChild(this.promptBg)
 
     this.promptTextObject = new Text({
       text: '',
@@ -55,12 +58,28 @@ export class InteractionSystem {
       },
     })
 
+    this.promptTextObject.x = 10
+    this.promptTextObject.y = 6
+
     this.promptContainer.addChild(this.promptTextObject) //add text to container
     this.app.stage.addChild(this.promptContainer) //add container to app
     this.promptContainer.visible = false //make it initially not visible (will turn visible when close to an object)
 
     //loop to update function every frame
     this.app.ticker.add(() => this.update())
+  }
+
+  //draw background in prompt text
+  private redrawPromptBackground() {
+    const padX = 10
+    const padY = 6
+    const radius = 6
+
+    const w = this.promptTextObject.width + padX * 2
+    const h = this.promptTextObject.height + padY * 2
+
+    this.promptBg.clear()
+    this.promptBg.roundRect(0, 0, w, h, radius).fill({ color: 0x000000, alpha: 0.6 })
   }
 
   //register an interactable object, called from main.ts
@@ -115,6 +134,7 @@ export class InteractionSystem {
           const lockedText = this.current.lockedText ?? 'You cannot do this yet'
 
           this.promptTextObject.text = lockedText //make the promptText the lockedText we sent via main.ts
+          this.redrawPromptBackground()
           this.promptContainer.position.set(characterPositionX - 50, characterPositionY - 120) //position the promptContainer on the character
           this.promptContainer.visible = true //make lockedText prompt visible when close to current object
 
@@ -124,6 +144,7 @@ export class InteractionSystem {
 
       // console.log(this.current.promptText)
       this.promptTextObject.text = this.current.promptText //make the promptText the one we sent via main.ts
+      this.redrawPromptBackground()
       this.promptContainer.position.set(characterPositionX - 50, characterPositionY - 120) //position the promptContainer on the character
       this.promptContainer.visible = true //make it visible when close to current object
     } else {
